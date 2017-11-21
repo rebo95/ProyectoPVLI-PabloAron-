@@ -1,0 +1,7 @@
+Proyect Gradius:
+A single player experience that will make you
+revive the original one, but adjusting the level 
+for nowadays casual players.
+Almost the same experience , but not particular 
+for hardcore gamers.
+We hope you will enjoy it.
