@@ -1,0 +1,57 @@
+Grupo: PabloAaron
+Juego: Gradius
+
+Semana 20-26
+
+	- Movimiento del jugador (A)
+	- habilidad de disparo	(P)
+	- Fin de afianzamiento con Phaser(PA)		
+
+Semana 27-03
+
+	- Preparación presentación técnica del primer hito (PA)
+	- Spawn enemigos (A)
+	- Disparo de enemigos (P)
+	- Movimiento y lógica de la cámara (PA)
+
+Semana 04-10
+
+	- Movimiento y lógica de los enemigos clásicos del juego (PA)
+	- Recolección de elementos en pantalla (A)
+	- Interacción jugador - entorno (P)
+
+Semana 11-17
+
+	- Perfeccionamiento interacción J-E (PA)
+	- Lógica de daño del player (daño de proyectiles y daño del entorno) (A)
+	- Añadir power - ups clásicos con su funcionalidad (P)
+
+Semana 18-24
+
+	- Lógica de destrucción de enemigos ya implementados (A)
+	- Comienzo construcción de nivel (PA)
+
+Semana 25-31
+
+	- Construcción de nivelado y avance del mismo (PA)
+	- Implementación de la lógica de los nuevos enemigos (P)
+	- Implementación de la lógica de los nuevos power- ups (A)
+
+Semana 01-07
+
+	- Refinamiento de la interacción entre los nuevos enemigos y los nuevos power-ups con el entorno y el player (A)
+	- Finalización del nivel (P)
+	- Implementación del Boss Final	(PA)
+
+Semana 08-14
+	
+	- Testing (A)
+	- Creación de una primera versión de la página web (P)
+	- Equilibrado (PA)
+	- Pulido artístico (P)
+
+Semana 15-19 (PA)
+	
+	- Testing final
+	- Editado página web final
+	- Speech y puesta en escena
