@@ -2,7 +2,7 @@
 var nave;
 var lasers;
 var fireCounter= 0;
-var fireRate = 5;
+var fireRate = 15;
 var fire = false;
 
 var PlayScene = {
@@ -12,6 +12,7 @@ var PlayScene = {
     var fondo = this.game.add.sprite(
       this.game.world.centerX, this.game.world.centerY, 'fondo');
     fondo.anchor.setTo(0.5, 0.5);
+    this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
     this.game.physics.setBoundsToWorld();
 
@@ -24,7 +25,8 @@ var PlayScene = {
     lasers = this.game.add.group();
     lasers.enableBody = true;
     lasers.physicsBodyType = Phaser.Physics.ARCADE;
-
+    lasers.createMultiple(5, "laser");
+    
 
   },
 
@@ -53,7 +55,9 @@ update: function(){
   if (this.game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)){
 
   if(!fire){
-        var laser = lasers.create(nave.x,nave.y, 'laser');
+        var laser = lasers.getFirstDead();
+        //var laser = lasers.create(nave.x,nave.y, 'laser');
+        laser.reset(nave.x, nave.y);
         laser.scale.setTo(0.1,0.1);
         laser.body.velocity.x = 500;
         fire = true ;
