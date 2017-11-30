@@ -23,7 +23,7 @@ var PreloaderScene = {
 
     // TODO: load here the assets for the game
     this.game.load.image('fondo', 'images/background.jpg');
-    this.game.load.image('nave', 'images/photo.jpg');
+    this.game.load.image('nave', 'images/nave.png');
     this.game.load.image('laser', 'images/phaser.png')
   },
 

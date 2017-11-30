@@ -2,7 +2,7 @@
 var nave;
 var lasers;
 var fireCounter= 0;
-var fireRate = 15;
+var fireRate = 10;
 var fire = false;
 
 var PlayScene = {
@@ -26,7 +26,8 @@ var PlayScene = {
     lasers.enableBody = true;
     lasers.physicsBodyType = Phaser.Physics.ARCADE;
     lasers.createMultiple(5, "laser");
-    
+    lasers.setAll('checkWorldBounds', true);
+    lasers.setAll('outOfBoundsKill', true);
 
   },
 
@@ -53,7 +54,7 @@ update: function(){
   }
 
   if (this.game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)){
-
+if(lasers.countLiving()<5)
   if(!fire){
         var laser = lasers.getFirstDead();
         //var laser = lasers.create(nave.x,nave.y, 'laser');
