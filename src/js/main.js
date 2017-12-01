@@ -21,9 +21,10 @@ var PreloaderScene = {
     this.game.load.baseURL = 'https://rebo95.github.io/ProyectoPVLI-PabloAron-/src/';
     this.game.load.crossOrigin = 'anonymous';
     // TODO: load here the assets for the game
-    this.game.load.image('fondo', 'images/background.jpg');
-    this.game.load.image('nave', 'images/nave.png');
-    this.game.load.image('laser', 'images/phaser.png')
+    this.game.load.image('fondo', './images/background.jpg');
+    this.game.load.image('nave', './images/nave.png');
+    this.game.load.image('laser', './images/phaser.png');
+    this.game.load.image('enemy', './images/Enemy.png');
   },
 
   create: function () {
@@ -33,9 +34,9 @@ var PreloaderScene = {
 
 
 window.onload = function () {//esto se ejecuta cuando la ventana se carga 
-  //se produce una llamada en cadena a los diferentes métodos
-  // primero se añaden al entorno y se les asigna un tag con el 
-  // que llamarlos más fácilmente 
+  //se produce una llamada en cadena a los diferentes mÃ©todos
+  // primero se aÃ±aden al entorno y se les asigna un tag con el 
+  // que llamarlos mÃ¡s fÃ¡cilmente 
   var game = new Phaser.Game(800, 600, Phaser.AUTO, 'game');
   
   game.state.add('boot', BootScene);
