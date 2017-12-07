@@ -9,20 +9,26 @@ var fireRate = 10;
 var fire = false;
 var map;
 var layer;
+var mapa;
+var capa;
 
 var PlayScene = {
   
   create: function () {
-
+    this.game.physics.startSystem(Phaser.Physics.ARCADE);
+    
     map = this.game.add.tilemap('tilemap',16,16);
     map.addTilesetImage('tilespng');
+    map.setCollision(813);
     layer = map.createLayer(0);
     
+
     nave = this.game.add.sprite(
       this.game.world.centerX, this.game.world.centerY, 'nave');
       this.game.physics.enable(nave, Phaser.Physics.ARCADE);
     nave.anchor.setTo(0.5, 0.5);
     nave.scale.setTo(0.15, 0.15);
+    nave.body.collideWorldBounds= true;
 
     enemy = this.game.add.sprite(
       this.game.world.width, this.game.world.centerY, 'nave');
@@ -56,7 +62,9 @@ var PlayScene = {
   },
 
 update: function(){
- 
+
+ this.game.physics.arcade.collide(nave, layer);
+
   target.x +=1;
   enemy.x -= 1;
 
@@ -100,6 +108,7 @@ if(lasers.countLiving()<5)
     }
   }       
 
+
 this.game.physics.arcade.collide(lasers, enemy, function(){enemy.kill();});
 this.game.physics.arcade.collide(nave, enemy, function(){nave.kill();});
 this.game.physics.arcade.collide(lasers, enemy2, function(){enemy2.kill();});
@@ -107,6 +116,9 @@ this.game.physics.arcade.collide(lasers, enemy2, function(){enemy2.kill();});
 this.game.camera.y = 100;
 this.game.camera.x = target.x;
   
+if(nave.x<target.x)
+  nave.x = target.x;
+
 }
 
 

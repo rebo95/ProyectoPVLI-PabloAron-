@@ -22,8 +22,8 @@ var PreloaderScene = {
     this.game.load.image('fondo', './images/background.jpg');
     this.game.load.image('nave', './images/nave.png');
     this.game.load.image('laser', './images/phaser.png');
-
-    this.game.load.tilemap('tilemap', 'images/pableras.csv');
+       
+    this.game.load.tilemap('tilemap', 'images/level2_front.csv');
     this.game.load.image('tilespng', 'images/tiles.png');
   },
 
