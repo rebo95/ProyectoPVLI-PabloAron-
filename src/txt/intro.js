@@ -1,0 +1,2 @@
+document.write("<strong> Project Gradius: </strong> <br>")
+document.write("Revive the original one, but adjusting the level for nowadays casual players. Almost the same experience , but not particular for hardcore gamers.. <br> We hope you will enjoy it.");
