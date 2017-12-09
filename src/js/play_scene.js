@@ -1,101 +1,224 @@
 'use strict';
-var nave;
-var lasers;
-var enemy;
-var enemy2;
-var fireCounter= 0;
-var fireRate = 10;
-var fire = false;
+
+var player;
+var playerVel = 4;
+var playerLives = 3;
+
+var enemy_1;
+var enemy_1Vel = 3;
+var enemy_1Lives = 1;
+
+var bullets_1;
+var bullets_1Vel = 3;
+var bullets_1Lives = 1;
+
+var shootTime = 0;
+
+var PlayScene = 
+{
+  create: function () 
+  {
+
+    //Player
+    var playerPos = new pos(100, this.game.world.centerY);
+    player = new Player(this.game, playerPos, 'ship', playerVel, playerLives);
+    player.anchor.setTo(0.5, 0.5);
+    player.scale.setTo(0.25, 0.25);
+    this.game.world.addChild(player);
+
+    //Enemy_1   
+    var enemy_1Pos = new pos(this.game.world.width, this.game.world.centerY - 100);
+    enemy_1 = new Enemy_1(this.game, enemy_1Pos, 'enemy_1', enemy_1Vel, enemy_1Lives);
+    enemy_1.anchor.setTo(0.5, 0.5);
+    enemy_1.scale.setTo(0.5, 0.5);
+    this.game.world.addChild(enemy_1);
 
 
-var PlayScene = {
-  
-  create: function () {
-
-    var fondo = this.game.add.sprite(
-      this.game.world.centerX, this.game.world.centerY, 'fondo');
-    fondo.anchor.setTo(0.5, 0.5);
-
-    nave = this.game.add.sprite(
-      this.game.world.centerX, this.game.world.centerY, 'nave');
-      this.game.physics.enable(nave, Phaser.Physics.ARCADE);
-    nave.anchor.setTo(0.5, 0.5);
-    nave.scale.setTo(0.15, 0.15);
-
-    enemy = this.game.add.sprite(
-      this.game.world.width, this.game.world.centerY, 'nave');
-      this.game.physics.enable(enemy, Phaser.Physics.ARCADE);
-    enemy.anchor.setTo(0.5, 0.5);
-    enemy.scale.setTo(0.25, 0.25);
-
-
-    enemy2 = this.game.add.sprite(
-      this.game.world.width, this.game.world.height - 150 , 'nave');
-      this.game.physics.enable(enemy2, Phaser.Physics.ARCADE);
-    enemy2.anchor.setTo(0.5, 0.5);
-    enemy2.scale.setTo(0.25, 0.25);
-
-
-    lasers = this.game.add.group();
-    lasers.enableBody = true;
-    lasers.physicsBodyType = Phaser.Physics.ARCADE;
-    lasers.createMultiple(5, "laser");
-    lasers.setAll('checkWorldBounds', true);
-    lasers.setAll('outOfBoundsKill', true);
-
+    bullets_1 = this.game.add.group();
+    bullets_1.enableBody = true;
+    bullets_1.physicsBodyType = Phaser.Physics.ARCADE;
+    
+    bullets_1.setAll('anchor.x', 0.5);
+    bullets_1.setAll('anchor.y', 0.5);
+    bullets_1.setAll('scale.x', 2.5);
+    bullets_1.setAll('scale.y', 2.5);
+    
+    bullets_1.createMultiple(15, 'bullet_1');
+    bullets_1.setAll('outOfBoundsKill', true);  //Se destruyen las balas cuando desaparecen del mapa
+    bullets_1.setAll('checkWorldBounds', true); //Sólo puedo disparar cuando estoy dentro de los límites del mapa
     
   },
 
-update: function(){
-
-  enemy.x -= 1;
-
-  if (this.game.input.keyboard.isDown(Phaser.Keyboard.LEFT))
+  update: function ()
   {
-      nave.x -= 4;
-
+    
   }
-  else if (this.game.input.keyboard.isDown(Phaser.Keyboard.RIGHT))
-  {
-      nave.x += 4;
-  }
-
-  if (this.game.input.keyboard.isDown(Phaser.Keyboard.UP))
-  {
-      nave.y -= 4;
-  }
-  else if (this.game.input.keyboard.isDown(Phaser.Keyboard.DOWN))
-  {
-      nave.y += 4;
-  }
-
-  if (this.game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)){
-if(lasers.countLiving()<5)
-  if(!fire){
-        var laser = lasers.getFirstDead();
-        //var laser = lasers.create(nave.x,nave.y, 'laser');
-        laser.reset(nave.x, nave.y);
-        laser.scale.setTo(0.1,0.1);
-        laser.body.velocity.x = 500;
-
-        fire = true ;
-  }
-  }
-  if (fire){
-    fireCounter++;
-    if(fireCounter>fireRate){
-      fire = false;
-      fireCounter = 0;
-    }
-  }       
-
-this.game.physics.arcade.collide(lasers, enemy, function(){enemy.kill();});
-this.game.physics.arcade.collide(nave, enemy, function(){nave.kill();});
-this.game.physics.arcade.collide(lasers, enemy2, function(){enemy2.kill();});
-  
-}
-
-
 };
 
 module.exports = PlayScene;
+
+//CLASES Y ARQUITECTURA DE HERENCIA
+function pos(x, y)
+{
+  this._x = x;
+  this._y = y;
+}
+
+//Objetos móviles
+function Movable(game, position, sprite, velocity)
+{
+  Phaser.Sprite.apply(this, [game, position._x, position._y, sprite]);
+  this._velocity = velocity;
+}
+
+Movable.prototype = Object.create(Phaser.Sprite.prototype);
+Movable.prototype.constructor = Movable;
+
+//Objetos que se destruyen
+function Destroyable(game, position, sprite,velocity, lives)
+{
+  Movable.apply(this, [game, position, sprite, velocity,]);
+  this._lives = lives;
+}
+
+Destroyable.prototype = Object.create(Movable.prototype);
+Destroyable.prototype.constructor = Destroyable;
+
+//Player
+function Player(game, position, sprite, velocity, lives)
+{
+  Destroyable.apply(this, [game, position, sprite, velocity, lives]);
+}
+
+Player.prototype = Object.create(Destroyable.prototype);
+Player.prototype.constructor = Player;
+
+//Métodos de la clase Player
+//Permite al player moverse con los cursores
+Player.prototype.Movement = function(vel)
+{
+  if (this.game.input.keyboard.isDown(Phaser.Keyboard.LEFT))
+  {
+      this.x -= vel;
+  }
+  else if (this.game.input.keyboard.isDown(Phaser.Keyboard.RIGHT))
+  {
+      this.x += vel;
+  }
+  if (this.game.input.keyboard.isDown(Phaser.Keyboard.UP))
+  {
+      this.y -= vel;
+  }
+  else if (this.game.input.keyboard.isDown(Phaser.Keyboard.DOWN))
+  {
+      this.y += vel;
+  }
+  if(this.game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR))
+  {
+    /*
+    var bullet_1Pos = new pos(this.x + 115, this.y);
+    bullet_1 = new Bullet(this.game, bullet_1Pos, 'bullet_1', bullet_1Vel, bullet_1Lives);
+    bullet_1.anchor.setTo(0.5, 0.5);
+    bullet_1.scale.setTo(2.5, 2.5);
+    this.game.world.addChild(bullet_1);
+    */
+    if(this.game.time.now > shootTime)
+    {
+      var bullet_1 = bullets_1.getFirstExists(false);
+      if(bullet_1)
+      {
+        bullet_1.reset(this.x + 50, this.y);
+        bullet_1.body.velocity.x = 600;
+        shootTime = this.game.time.now + 100;
+      }
+    }
+  }
+
+}
+
+Player.prototype.update = function()
+{
+  this.Movement(playerVel);
+}
+
+//Balas
+function Bullet(game, position, sprite, velocity, lives)
+{
+  Destroyable.apply(this, [game, position, sprite, velocity, lives]);
+}
+
+Bullet.prototype = Object.create(Destroyable.prototype);
+Bullet.prototype.constructor = Bullet;
+
+Bullet.prototype.move_along_bullet = function(vel)
+{
+  this.x += vel;
+}
+
+function Bullet_1(game, position, sprite, velocity, lives)
+{
+  Bullet.apply(this, [game, position, sprite, velocity, lives]);
+}
+
+Bullet_1.prototype = Object.create(Bullet.prototype);
+Bullet_1.prototype.constructor = Bullet_1;
+
+Bullet_1.prototype.Movement = function(vel)
+{
+  this.move_along_bullet(bullet_1Vel);
+}
+
+Bullet_1.prototype.update = function()
+{
+  this.Movement(bullet_1Vel);
+}
+
+//Enemigos
+function Enemy(game, position, sprite, velocity, lives)
+{
+  Destroyable.apply(this, [game, position, sprite, velocity, lives]);
+}
+
+Enemy.prototype = Object.create(Destroyable.prototype);
+Enemy.prototype.constructor = Enemy;
+
+Enemy.prototype.move_along_enemy = function(vel)
+{
+  this.x -= vel;
+}
+
+function Enemy_1(game, position, sprite, velocity, lives)
+{
+  Enemy.apply(this, [game, position, sprite, velocity, lives]);
+}
+
+Enemy_1.prototype = Object.create(Enemy.prototype);
+Enemy_1.prototype.constructor = Enemy_1;
+
+var Enemy_1Mov = false;
+
+Enemy_1.prototype.Movement = function(vel)
+{
+  if(this.x > this.game.world.centerX && !Enemy_1Mov)
+  {
+    this.move_along_enemy(vel);
+    
+  }
+  else
+  {
+    this.x += vel;
+    if(this.x < this.game.world.centerX + 100)
+    {
+      this.y += vel;
+    }
+    
+    Enemy_1Mov = true;
+  }
+  
+
+}
+
+Enemy_1.prototype.update = function()
+{
+  this.Movement(enemy_1Vel);
+}
