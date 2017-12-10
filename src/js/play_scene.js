@@ -24,6 +24,7 @@ var PlayScene =
     player = new Player(this.game, playerPos, 'ship', playerVel, playerLives);
     player.anchor.setTo(0.5, 0.5);
     player.scale.setTo(0.25, 0.25);
+    this.game.physics.arcade.enable(player);
     this.game.world.addChild(player);
 
     //Enemy_1   
@@ -31,6 +32,7 @@ var PlayScene =
     enemy_1 = new Enemy_1(this.game, enemy_1Pos, 'enemy_1', enemy_1Vel, enemy_1Lives);
     enemy_1.anchor.setTo(0.5, 0.5);
     enemy_1.scale.setTo(0.5, 0.5);
+    this.game.physics.arcade.enable(enemy_1);
     this.game.world.addChild(enemy_1);
 
 
@@ -51,9 +53,17 @@ var PlayScene =
 
   update: function ()
   {
-    
-  }
-};
+    this.game.physics.arcade.overlap(bullets_1, enemy_1, collisionHandler, null, this);
+    this.game.physics.arcade.overlap(player, enemy_1, collisionHandler, null, this);
+  },
+
+};   
+
+function collisionHandler(obj1, obj2)
+{
+  obj1.kill();
+  obj2.kill();
+}
 
 module.exports = PlayScene;
 
