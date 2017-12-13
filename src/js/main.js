@@ -6,7 +6,7 @@ var PlayScene = require('./play_scene.js');
 var BootScene = {
   preload: function () {
     // load here assets required for the loading screen
-    
+    this.game.physics.startSystem(Phaser.Physics.ARCADE);
   },
 
   create: function () {
@@ -22,7 +22,9 @@ var PreloaderScene = {
     this.game.load.image('fondo', './images/background.jpg');
     this.game.load.image('nave', './images/nave.png');
     this.game.load.image('laser', './images/phaser.png');
-       
+
+
+    this.load.tilemap('level', './images/object.json', null, Phaser.Tilemap.TILED_JSON);
     this.game.load.tilemap('tilemap', 'images/level2_front.csv');
     this.game.load.image('tilespng', 'images/tiles.png');
   },
