@@ -1,11 +1,13 @@
 'use strict';
 
 var player;
-var playerVel = 4;
+var playerVel = 10;
 var playerLives = 3;
 
+var target;
+
 var enemy_1;
-var enemy_1Vel = 3;
+var enemy_1Vel = 1
 var enemy_1Lives = 1;
 
 var bullets_1;
@@ -14,10 +16,26 @@ var bullets_1Lives = 1;
 
 var shootTime = 0;
 
+var map;
+var layer;
+var level;
+var back;
+
 var PlayScene = 
 {
   create: function () 
   {
+
+    //Map
+    map = this.game.add.tilemap('level');
+    map.addTilesetImage('tilesheet','tilespng');
+    
+
+    back = map.createLayer('fondo');//son los nombres del tiled, como se llaman las capas del tiled creado
+    level = map.createLayer('nivelado');
+    map.setCollisionBetween(1,1000, true, 'nivelado');
+   
+
 
     //Player
     var playerPos = new pos(100, this.game.world.centerY);
@@ -26,14 +44,21 @@ var PlayScene =
     player.scale.setTo(0.25, 0.25);
     this.game.physics.arcade.enable(player);
     this.game.world.addChild(player);
+    player.body.collideWorldBounds= true;
 
     //Enemy_1   
-    var enemy_1Pos = new pos(this.game.world.width, this.game.world.centerY - 100);
+    var enemy_1Pos = new pos(this.game.world.width-200, this.game.world.centerY - 100);
     enemy_1 = new Enemy_1(this.game, enemy_1Pos, 'enemy_1', enemy_1Vel, enemy_1Lives);
     enemy_1.anchor.setTo(0.5, 0.5);
     enemy_1.scale.setTo(0.5, 0.5);
     this.game.physics.arcade.enable(enemy_1);
     this.game.world.addChild(enemy_1);
+
+    target= this.game.add.sprite(
+    this.game.world.width, this.game.world.centerY);
+    target.anchor.setTo(0.5, 0.5);
+    target.scale.setTo(0.25, 0.25);
+    target.x = 0;
 
 
     bullets_1 = this.game.add.group();
@@ -49,12 +74,26 @@ var PlayScene =
     bullets_1.setAll('outOfBoundsKill', true);  //Se destruyen las balas cuando desaparecen del mapa
     bullets_1.setAll('checkWorldBounds', true); //Sólo puedo disparar cuando estoy dentro de los límites del mapa
     
+    level.resizeWorld();
+    
   },
 
   update: function ()
   {
+    
+
+    if(target.x < this.game.world.width - this.game.camera.width)
+    target.x +=1;
+
+    
     this.game.physics.arcade.overlap(bullets_1, enemy_1, collisionHandler, null, this);
     this.game.physics.arcade.overlap(player, enemy_1, collisionHandler, null, this);
+    this.game.physics.arcade.collide(player, level);
+
+    this.game.camera.x = target.x;
+
+    if(player.x<target.x)
+    player.x = target.x;
   },
 
 };   
@@ -138,7 +177,7 @@ Player.prototype.Movement = function(vel)
       if(bullet_1)
       {
         bullet_1.reset(this.x + 50, this.y);
-        bullet_1.body.velocity.x = 600;
+        bullet_1.body.velocity.x = 900;
         shootTime = this.game.time.now + 100;
       }
     }
@@ -224,8 +263,6 @@ Enemy_1.prototype.Movement = function(vel)
     
     Enemy_1Mov = true;
   }
-  
-
 }
 
 Enemy_1.prototype.update = function()
