@@ -1,3 +1,58 @@
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+'use strict';
+
+var PlayScene = require('./play_scene.js');
+var IMAGE_PATH = 'images/';
+
+var BootScene = {
+  preload: function () {
+    // load here assets required for the loading screen
+    this.game.load.image('preloader_bar', 'images/preloader_bar.png');
+  },
+
+  create: function () {
+    this.game.state.start('preloader');
+  }
+};
+
+
+var PreloaderScene = {
+  preload: function () {
+
+    this.game.load.baseURL = 'https://rebo95.github.io/ProyectoPVLI-PabloAron-/src/';
+    this.game.load.crossOrigin = 'anonymous';
+    
+    this.loadingBar = this.game.add.sprite(0, 240, 'preloader_bar');
+    this.loadingBar.anchor.setTo(0, 0.5);
+    this.load.setPreloadSprite(this.loadingBar);
+
+    // TODO: load here the assets for the game
+    this.game.load.image('ship', IMAGE_PATH + 'futurama.png');
+    this.game.load.image('enemy_1', IMAGE_PATH + 'meteorite.png');
+    this.game.load.image('bullet_1', IMAGE_PATH + 'bullet1.png');
+
+    //cargas necesarias para el tiled y el mapa
+    this.load.tilemap('level', './images/object.json', null, Phaser.Tilemap.TILED_JSON);
+    this.game.load.image('tilespng', 'images/tiles.png');
+  },
+
+  create: function () {
+    this.game.state.start('play');
+  }
+};
+
+
+window.onload = function () {
+  var game = new Phaser.Game(800, 600, Phaser.AUTO, 'game');
+
+  game.state.add('boot', BootScene);
+  game.state.add('preloader', PreloaderScene);
+  game.state.add('play', PlayScene);
+
+  game.state.start('boot');
+};
+
+},{"./play_scene.js":2}],2:[function(require,module,exports){
 'use strict';
 
 var player;
@@ -6,15 +61,9 @@ var playerLives = 3;
 
 var target;
 
-//Enemigo que avanza un poco y retrocede en diagonal
 var enemy_1;
 var enemy_1Vel = 1
 var enemy_1Lives = 1;
-
-//Enemigo que avanza en línea recta y va hacia el player
-var enemy_2;
-var enemy_2Vel = 1
-var enemy_2Lives = 1;
 
 var bullets_1;
 var bullets_1Vel = 3;
@@ -53,23 +102,14 @@ var PlayScene =
     player.body.collideWorldBounds= true;
 
     //Enemy_1   
-    var enemy_1Pos = new pos(this.game.world.width - 200, this.game.world.centerY - 100);
+    var enemy_1Pos = new pos(this.game.world.width-200, this.game.world.centerY - 100);
     enemy_1 = new Enemy_1(this.game, enemy_1Pos, 'enemy_1', enemy_1Vel, enemy_1Lives);
     enemy_1.anchor.setTo(0.5, 0.5);
     enemy_1.scale.setTo(0.5, 0.5);
     this.game.physics.arcade.enable(enemy_1);
     this.game.world.addChild(enemy_1);
 
-    //Enemy_2
-    var enemy_2Pos = new pos(this.game.world.width - 200, this.game.world.centerY - 100);
-    enemy_2 = new Enemy_2(this.game, enemy_2Pos, 'enemy_2', enemy_2Vel, enemy_2Lives);
-    enemy_2.anchor.setTo(0.5, 0.5);
-    enemy_2.scale.setTo(0.5, 0.5);
-    this.game.physics.arcade.enable(enemy_2);
-    this.game.world.addChild(enemy_2);
-
-
-    target = this.game.add.sprite(
+    target= this.game.add.sprite(
     this.game.world.width, this.game.world.centerY);
     target.anchor.setTo(0.5, 0.5);
     target.scale.setTo(0.25, 0.25);
@@ -284,39 +324,4 @@ Enemy_1.prototype.update = function()
 {
   this.Movement(enemy_1Vel);
 }
-
-function Enemy_2(game, position, sprite, velocity, lives)
-{
-  Enemy.apply(this, [game, position, sprite, velocity, lives]);
-}
-
-Enemy_2.prototype = Obsject.create(Enemy.prototype);
-Enemy_2.prototype.constructor = Enemy_2;
-
-Enemy_2.prototype.Movement = function(vel)
-{
-  if(this.x > this.game.world.width / 2)
-  {
-    this.move_along_enemy(vel);
-  }
-  else
-  {
-    if(this.y > player.y)
-    {
-      this.y--;
-    }
-    else if(this.y < player.y)
-    {
-      this.y++;
-    }
-    else
-    {
-      this.move_along_enemy(vel);
-    }
-  }
-}
-
-enemy_2.prototype.update = function()
-{
-  this.Movement(enemy_2Vel);
-}
+},{}]},{},[1]);

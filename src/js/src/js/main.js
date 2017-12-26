@@ -27,11 +27,8 @@ var PreloaderScene = {
 
     // TODO: load here the assets for the game
     this.game.load.image('ship', IMAGE_PATH + 'futurama.png');
-    this.game.load.image('bullet_1', IMAGE_PATH + 'bullet1.png');
-    //Cargas para los enemigos
     this.game.load.image('enemy_1', IMAGE_PATH + 'meteorite.png');
-    this.game.load.image('enemy_2', IMAGE_PATH + 'meteorite.png');
-
+    this.game.load.image('bullet_1', IMAGE_PATH + 'bullet1.png');
 
     //cargas necesarias para el tiled y el mapa
     this.load.tilemap('level', './images/object.json', null, Phaser.Tilemap.TILED_JSON);
