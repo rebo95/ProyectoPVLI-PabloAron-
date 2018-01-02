@@ -13,6 +13,8 @@ var player;
 var playerVel = 10;
 var playerLives = 3;
 
+
+
 var playerAlive = true;
 
 var target;
@@ -60,6 +62,7 @@ var explosion;
 var map;
 var layer;
 var level;
+var colisiones;
 var back;
 
 var PlayScene = 
@@ -67,15 +70,20 @@ var PlayScene =
   create: function () 
   {
 
+    this.game.physics.startSystem(Phaser.Physics.ARCADE);
+
     //Map
     map = this.game.add.tilemap('level');
     map.addTilesetImage('tilesheet','tilespng');
-    
 
     back = map.createLayer('fondo');//son los nombres del tiled, como se llaman las capas del tiled creado
     level = map.createLayer('nivelado');
-    map.setCollisionBetween(1,1000, true, 'nivelado');
-   
+    
+    colisiones = map.createLayer('collisions');
+
+    map.setCollisionByExclusion([0], true, colisiones);
+
+    //map.setCollision(708, true, level);
 
 
     //Input
@@ -92,7 +100,7 @@ var PlayScene =
     shootSound = this.game.add.audio('blaster');
     explosion = this.game.add.audio('explosion');
   
-
+    
     //shootSound.onStop.add(soundStopped, this);
     //explosion.onStop.add(soundStopped, this);
     this.game.sound.setDecodedCallback([shootSound, explosion, music], start, this);
@@ -100,12 +108,12 @@ var PlayScene =
 
     //Player
     var playerPos = new pos(100, this.game.world.centerY);
-    player = new Player(this.game, playerPos, 'ship', playerVel, playerLives);
+    player = new Player(this.game, playerPos,'naves', 'front', playerVel, playerLives);
     player.anchor.setTo(0.5, 0.5);
-    player.scale.setTo(0.25, 0.25);
+    player.scale.setTo(3,3);
     this.game.physics.arcade.enable(player);
     this.game.world.addChild(player);
-    player.body.collideWorldBounds= true;
+    player.body.collideWorldBounds = true;
 
     //Enemy_1   
     var enemy_1Pos = new pos(this.game.world.width - 200, this.game.world.centerY - 100);
@@ -174,7 +182,7 @@ var PlayScene =
     bullets_1.setAll('outOfBoundsKill', true);  //Se destruyen las balas cuando desaparecen del mapa
     bullets_1.setAll('checkWorldBounds', true); //Sólo puedo disparar cuando estoy dentro de los límites del mapa
     
-    level.resizeWorld();
+    colisiones.resizeWorld();
     
   },
 
@@ -186,7 +194,10 @@ var PlayScene =
     if(target.x < this.game.world.width - this.game.camera.width)
     target.x +=1;
 
+    colisiones.debug = true;
     
+    this.game.physics.arcade.collide(player, this.colisiones);
+
     this.game.physics.arcade.overlap(bullets_1, enemy_1, collisionHandler, null, this);
     this.game.physics.arcade.overlap(bullets_1, enemy_2, collisionHandler, null, this);
     this.game.physics.arcade.overlap(bullets_1, enemy_3, collisionHandler, null, this);
@@ -195,18 +206,25 @@ var PlayScene =
     this.game.physics.arcade.overlap(player, enemy_2, collisionHandler, null, this);
     this.game.physics.arcade.overlap(player, enemy_3, collisionHandler, null, this);
     this.game.physics.arcade.overlap(player, enemy_4, collisionHandler, null, this);
-    this.game.physics.arcade.collide(player, level, collisionHandler, null, this);
+
+    
 
 
     this.game.camera.x = target.x;
 
     if(player.x<target.x)
     player.x = target.x;
+
+    this.game.debug.body(player);
+    this.game.debug.body(enemy_4);
   },
 
 };   
 //////////////////////////////
 //Funciones Auxiliares independientes de la jerarquía
+function collisionHandler2(obj1, obj2){
+  obj1.kill();
+}
 
 function collisionHandler(obj1, obj2)
 {
@@ -296,20 +314,28 @@ Player.prototype.Movement = function(vel)
 {
   if (leftKey.isDown)
   {
-      this.x -= vel;
+      this.body.x -= vel;
+
   }
   else if (rightKey.isDown)
   {
-      this.x += vel;
+    this.body.x += vel;
+
   }
+
   if (upKey.isDown)
   {
-      this.y -= vel;
+    this.body.y -= vel * 0.5;
+      player.frameName = 'down';
   }
   else if (downKey.isDown)
   {
-      this.y += vel;
+    this.body.y += vel * 0.5;
+      player.frameName = 'up';
+  }  else {
+    player.frameName = 'front';
   }
+
   if(spacebarKey.isDown)
   {
     /*

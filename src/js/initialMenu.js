@@ -10,18 +10,26 @@ var boton;
 
 var music;
 var txt;
-
+var nave;
 var MainMenu = {
     create : function(){
 
         music = this.game.add.audio('menuMusic');
         this.game.sound.setDecodedCallback([music], start, this);
+
+        arribaTecla = this.game.input.keyboard.addKey(Phaser.Keyboard.UP);
+
+        
         
     },
 
 
     update: function(){
         //enemigo.x++;}
+        
+    if(arribaTecla.isDown){
+        nave.frameName = 'front';
+    }
     },
 
 };
@@ -41,12 +49,20 @@ function start(){
     txt = this.game.add.text(boton.x, boton.y, "Play" , {font: "20px Italic", fill:"#ffff", align: "center"});
     txt.anchor.setTo(0.5,0.5);
     
+    nave = this.game.add.sprite( 100, 100, 'naves', 'up');
+    nave.anchor.setTo(0.5,0.5);
+    nave.scale.setTo(3,3);
+
     boton.onInputOver.add(over, this);
     boton.onInputOut.add(out, this);
    
     //enemigo = this.game.add.sprite(this.game.world.centerX, this.game.world.centerY, 'enemy_1' );
-    arribaTecla = this.game.input.keyboard.addKey(Phaser.Keyboard.UP);
+    
     mouseButton = this.game.input.activePointer.leftButton;
+
+    if(arribaTecla.isDown){
+        nave.frameName = 'up';
+    }
 }
 
 

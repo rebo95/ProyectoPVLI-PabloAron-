@@ -44,7 +44,9 @@ var PreloaderScene = {
     this.game.load.audio('blaster', 'audio/sfx.mp3' );
     
     // TODO: load here the assets for the game
-    this.game.load.image('ship', IMAGE_PATH + 'futurama.png');
+    this.game.load.image('ship', IMAGE_PATH + 'futurama.png'); 
+    
+    this.game.load.atlas('naves',  IMAGE_PATH + 'naveSprite.png',  IMAGE_PATH + 'naveJson.json');
     
     //Cargas de los enemigos
     this.game.load.image('enemy_1', IMAGE_PATH + 'meteorite.png');
