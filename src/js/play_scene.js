@@ -13,6 +13,8 @@ var player;
 var playerVel = 10;
 var playerLives = 3;
 
+var weapons = [];
+var currentWeapon = 0;
 
 
 var playerAlive = true;
@@ -56,8 +58,6 @@ var music;
 //sound effects
 var shootSound;
 var explosion;
-
-
 
 var map;
 var layer;
@@ -115,6 +115,17 @@ var PlayScene =
     this.game.world.addChild(player);
     player.body.collideWorldBounds = true;
 
+    weapons.push(new Weapon.SingleBullet(this.game));
+    weapons.push(new Weapon.UpFront(this.game));
+    weapons.push(new Weapon.FrontDown(this.game));
+    weapons.push(new Weapon.ThreeWay(this.game));
+    currentWeapon = 3;
+    /*
+    for(var i = 1; i < weapons.length; i++)
+    {
+      weapons[i].visible = false;
+    }
+    */
     //Enemy_1   
     var enemy_1Pos = new pos(this.game.world.width - 200, this.game.world.centerY - 100);
     enemy_1 = new Enemy_1(this.game, enemy_1Pos, 'enemy_1', enemy_1Vel, enemy_1Lives);
@@ -168,20 +179,6 @@ var PlayScene =
     target.scale.setTo(0.25, 0.25);
     target.x = 0;
 
-
-    bullets_1 = this.game.add.group();
-    bullets_1.enableBody = true;
-    bullets_1.physicsBodyType = Phaser.Physics.ARCADE;
-    
-    bullets_1.setAll('anchor.x', 0.5);
-    bullets_1.setAll('anchor.y', 0.5);
-    bullets_1.setAll('scale.x', 2.5);
-    bullets_1.setAll('scale.y', 2.5);
-    
-    bullets_1.createMultiple(15, 'bullet_1');
-    bullets_1.setAll('outOfBoundsKill', true);  //Se destruyen las balas cuando desaparecen del mapa
-    bullets_1.setAll('checkWorldBounds', true); //Sólo puedo disparar cuando estoy dentro de los límites del mapa
-    
     colisiones.resizeWorld();
     
   },
@@ -273,10 +270,6 @@ function movimiento(objeto, velocidad){
   objeto.x +=1;
 }
 
-
-
-
-
 //Objetos móviles
 function Movable(game, position, sprite, velocity)
 {
@@ -338,26 +331,7 @@ Player.prototype.Movement = function(vel)
 
   if(spacebarKey.isDown)
   {
-    /*
-    var bullet_1Pos = new pos(this.x + 115, this.y);
-    bullet_1 = new Bullet(this.game, bullet_1Pos, 'bullet_1', bullet_1Vel, bullet_1Lives);
-    bullet_1.anchor.setTo(0.5, 0.5);
-    bullet_1.scale.setTo(2.5, 2.5);
-    this.game.world.addChild(bullet_1);
-    */
-    if(playerAlive)
-    if(this.game.time.now > shootTime)
-    {
-      var bullet_1 = bullets_1.getFirstExists(false);
-      if(bullet_1)
-      {
-
-        bullet_1.reset(this.x + 50, this.y);
-        bullet_1.body.velocity.x = 900;
-        shootTime = this.game.time.now + 100;
-        shootSound.play();
-      }
-    }
+    weapons[currentWeapon].fire(player);
   }
 
 }
@@ -367,38 +341,182 @@ Player.prototype.update = function()
   this.Movement(playerVel);
 }
 
-//Balas
-function Bullet(game, position, sprite, velocity, lives)
+//NUEVAS CLASES BALAS MEJORADAS
+function Bullet (game, sprite)
 {
-  Destroyable.apply(this, [game, position, sprite, velocity, lives]);
+  Phaser.Sprite.call(this, game, 0, 0, sprite);
+  this.anchor.set(0.5);
+  
+  this.checkWorldBounds = true;
+  this.outOfBoundsKill = true;
+  this.exists = false;
 }
 
-Bullet.prototype = Object.create(Destroyable.prototype);
+Bullet.prototype = Object.create(Phaser.Sprite.prototype);
 Bullet.prototype.constructor = Bullet;
 
-Bullet.prototype.move_along_bullet = function(vel)
+//Método fire común a todas las balas
+Bullet.prototype.fire = function (x, y, angle, speed, gx, gy) 
 {
-  this.x += vel;
-}
+  
+  gx = gx || 0;
+  gy = gy || 0;
+  
+   this.reset(x, y);  //colocamos el objeto en la x e y introducidas
+   this.scale.set(1);
+  
+   this.game.physics.arcade.velocityFromAngle(angle, speed, this.body.velocity);
+  
+   this.angle = angle;
+  
+  this.body.gravity.set(gx, gy);
+  
+};
 
-function Bullet_1(game, position, sprite, velocity, lives)
+var Weapon = {};
+
+//Clase que hereda de Phaser group
+Weapon.SingleBullet = function (game) 
 {
-  Bullet.apply(this, [game, position, sprite, velocity, lives]);
-}
+  
+  Phaser.Group.call(this, game, game.world, 'Single Bullet', false, true, Phaser.Physics.ARCADE);
+  
+  this.nextFire = 0;
+  this.bulletSpeed = 600;
+  this.fireRate = 100;
+  
+  for (var i = 0; i < 64; i++)
+  {
+     this.add(new Bullet(game, 'bullet_1'), true);
+  }
+  
+  return this;
+  
+};
+  
+  Weapon.SingleBullet.prototype = Object.create(Phaser.Group.prototype);
+  Weapon.SingleBullet.prototype.constructor = Weapon.SingleBullet;
+  
+  Weapon.SingleBullet.prototype.fire = function (source)
+  {
+  
+    if (this.game.time.time < this.nextFire) { return; }
+  
+      var x = source.x + 10;
+      var y = source.y + 10;
+  
+      this.getFirstExists(false).fire(x, y, 0, this.bulletSpeed, 0, 0);
 
-Bullet_1.prototype = Object.create(Bullet.prototype);
-Bullet_1.prototype.constructor = Bullet_1;
+      this.nextFire = this.game.time.time + this.fireRate;
+  
+  };
 
-Bullet_1.prototype.Movement = function(vel)
-{
-      //this.move_along_bullet(bullet_1Vel); // como heredamos de bullet podemos usar sus funciones
-      movimiento(this,bullet_1Vel);
-}
+  Weapon.UpFront = function (game)
+  {
+    Phaser.Group.call(this, game, game.world, 'UpFront', false, true, Phaser.Physics.ARCADE);
+    
+    this.nextFire = 0;
+    this.bulletSpeed = 600;
+    this.fireRate = 100;
+    
+    for (var i = 0; i < 64; i++)
+    {
+       this.add(new Bullet(game, 'bullet_1'), true);
+    }
+    
+    return this;
+  };
 
-Bullet_1.prototype.update = function()
-{  
-  this.Movement(bullet_1Vel);
-}
+  Weapon.UpFront.prototype = Object.create(Phaser.Group.prototype);
+  Weapon.UpFront.prototype.constructor = Weapon.UpFront;
+
+  Weapon.UpFront.prototype.fire = function (source)
+  {
+    if (this.game.time.time < this.nextFire) { return; }
+    
+    var x = source.x + 10;
+    var y = source.y + 10;
+    
+    this.getFirstExists(false).fire(x, y, 0, this.bulletSpeed, 0, 0);
+    this.getFirstExists(false).fire(x, y, -45, this.bulletSpeed, 0, 0);
+    
+    this.nextFire = this.game.time.time + this.fireRate;
+  };
+
+  //Bala que dispara de frente y hacia abajo
+  Weapon.FrontDown = function (game) 
+  {
+    
+    Phaser.Group.call(this, game, game.world, 'FrontDown', false, true, Phaser.Physics.ARCADE);
+    
+    this.nextFire = 0;
+    this.bulletSpeed = 600;
+    this.fireRate = 100;
+    
+    for (var i = 0; i < 64; i++)
+    {
+       this.add(new Bullet(game, 'bullet_1'), true);
+    }
+    
+    return this;
+    
+  };
+    
+    Weapon.FrontDown.prototype = Object.create(Phaser.Group.prototype);
+    Weapon.FrontDown.prototype.constructor = Weapon.FrontDown;
+    
+    Weapon.FrontDown.prototype.fire = function (source)
+    {
+    
+      if (this.game.time.time < this.nextFire) { return; }
+    
+        var x = source.x + 10;
+        var y = source.y + 10;
+    
+        this.getFirstExists(false).fire(x, y, 0, this.bulletSpeed, 0, 0);
+        this.getFirstExists(false).fire(x, y, 45, this.bulletSpeed, 0, 0);
+  
+        this.nextFire = this.game.time.time + this.fireRate;
+    
+    };
+
+    //Bala que va hacia delante, arriba y abajo
+    Weapon.ThreeWay = function (game) 
+    {
+      
+      Phaser.Group.call(this, game, game.world, 'ThreeWay', false, true, Phaser.Physics.ARCADE);
+      
+      this.nextFire = 0;
+      this.bulletSpeed = 600;
+      this.fireRate = 100;
+      
+      for (var i = 0; i < 64; i++)
+      {
+         this.add(new Bullet(game, 'bullet_1'), true);
+      }
+      
+      return this;
+      
+    };
+      
+      Weapon.ThreeWay.prototype = Object.create(Phaser.Group.prototype);
+      Weapon.ThreeWay.prototype.constructor = Weapon.ThreeWay;
+      
+      Weapon.ThreeWay.prototype.fire = function (source)
+      {
+      
+        if (this.game.time.time < this.nextFire) { return; }
+      
+          var x = source.x + 10;
+          var y = source.y + 10;
+      
+          this.getFirstExists(false).fire(x, y, 0, this.bulletSpeed, 0, 0);
+          this.getFirstExists(false).fire(x, y, 45, this.bulletSpeed, 0, 0);
+          this.getFirstExists(false).fire(x, y, -45, this.bulletSpeed, 0, 0);
+    
+          this.nextFire = this.game.time.time + this.fireRate;
+      
+      };
 
 //Enemigos
 function Enemy(game, position, sprite, velocity, lives)
