@@ -1,5 +1,7 @@
 'use strict';
 
+var akey;
+var nuestroJuego;
 
 
 var upKey;
@@ -7,6 +9,19 @@ var downKey;
 var leftKey;
 var rightKey;
 var spacebarKey;
+
+
+var d; 
+var naveEspacial;
+var secondPlayerAlive = false;
+var player2;
+
+
+
+
+var enemyArray = [];
+var playerArray = [];
+
 
 //Player
 var player;
@@ -69,6 +84,7 @@ var PlayScene =
 {
   create: function () 
   {
+    nuestroJuego = this.game;
 
     this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
@@ -85,6 +101,7 @@ var PlayScene =
 
     //map.setCollision(708, true, level);
 
+    akey = this.game.input.keyboard.addKey(Phaser.Keyboard.A);
 
     //Input
     upKey = this.game.input.keyboard.addKey(Phaser.Keyboard.UP);
@@ -106,7 +123,7 @@ var PlayScene =
     this.game.sound.setDecodedCallback([shootSound, explosion, music], start, this);
 
 
-    //Player
+   /* //Player
     var playerPos = new pos(100, this.game.world.centerY);
     player = new Player(this.game, playerPos,'naves', 'front', playerVel, playerLives);
     player.anchor.setTo(0.5, 0.5);
@@ -114,6 +131,7 @@ var PlayScene =
     this.game.physics.arcade.enable(player);
     this.game.world.addChild(player);
     player.body.collideWorldBounds = true;
+    */
 
     weapons.push(new Weapon.SingleBullet(this.game));
     weapons.push(new Weapon.UpFront(this.game));
@@ -181,6 +199,32 @@ var PlayScene =
     target.x = 0;
 
     colisiones.resizeWorld();
+
+    d = this.game.add.physicsGroup();
+    map.createFromObjects('objetos', 'n', '', 779, true, false, d);// asÃ­ funciona igual , para la nave no nos hace falta poner el grupo
+    d.forEach(function(integrante){
+      // nos da la poiscion de cada uno de los integrantes
+      var enePos = new pos(integrante.x, integrante.y);
+      crea(nuestroJuego, enePos,'enemy_1',enemy_1Vel,enemy_1Lives );
+  });    
+
+  //player
+  naveEspacial = this.game.add.physicsGroup();
+  map.createFromObjects('objetos', 'nave', '', 683, true, false, naveEspacial);
+  naveEspacial.forEach(function(integrante){
+    // nos da la poiscion de cada uno de los integrantes
+    var playerPos = new pos(integrante.x, integrante.y);
+    player = new Player(nuestroJuego, playerPos,'naves', playerVel, playerLives);
+    player.anchor.setTo(0.5, 0.5);
+    player.scale.setTo(3,3);
+    nuestroJuego.physics.arcade.enable(player);
+    nuestroJuego.world.addChild(player);
+    player.body.collideWorldBounds = true;
+    playerArray.push(player);
+
+
+});    
+
     
   },
 
@@ -195,6 +239,12 @@ var PlayScene =
     colisiones.debug = true;
     
     this.game.physics.arcade.collide(player, this.colisiones);
+
+        for(var i = 0; i<enemyArray.length; i++ ){
+      this.game.physics.arcade.overlap(weapons[currentWeapon], enemyArray[i], collisionHandler, null, this);
+        this.game.physics.arcade.overlap(player, enemyArray[i], collisionHandler, null, this);
+    }
+
 
     this.game.physics.arcade.overlap(weapons[currentWeapon], enemy_1, collisionHandler, null, this);
     this.game.physics.arcade.overlap(weapons[currentWeapon], enemy_2, collisionHandler, null, this);
@@ -212,6 +262,16 @@ var PlayScene =
 
     if(player.x<target.x)
     player.x = target.x;
+
+    for(var i = 0; i<enemyArray.length; i++ ){
+      this.game.debug.body(enemyArray[i]);
+    }
+
+    if(secondPlayerAlive)
+    {
+
+
+    }
 
     this.game.debug.body(player);
     this.game.debug.body(enemy_4);
@@ -271,6 +331,34 @@ function movimiento(objeto, velocidad){
   objeto.x +=1;
 }
 
+function crea(juego, posicion, spriteName, velocidad, vidas){
+  var ene = new Enemy_1(juego, posicion, spriteName, velocidad, vidas);
+  ene.anchor.setTo(0.5, 0.5);
+  ene.scale.setTo(0.5, 0.5);
+  juego.physics.arcade.enable(ene);
+  juego.world.addChild(ene);
+  enemyArray.push(ene);
+
+}
+
+function createSecondPlayer(vidas){
+  vidas = 3;
+  var player2Pos = new pos(player.x - 50, player.y + 50);
+  player2 = new Player2(nuestroJuego, player2Pos,'naves', playerVel, vidas,player);
+  player2.anchor.setTo(0.5, 0.5);
+  player2.scale.setTo(3,3);
+  nuestroJuego.physics.arcade.enable(player2);
+  nuestroJuego.world.addChild(player2);
+  player2.body.collideWorldBounds = true;
+  secondPlayerAlive = true;
+  playerArray.push(player2);
+  
+}
+
+
+
+
+
 //Objetos móviles
 function Movable(game, position, sprite, velocity)
 {
@@ -304,27 +392,31 @@ Player.prototype.constructor = Player;
 //Métodos de la clase Player
 //Permite al player moverse con los cursores
 // añade al prototipo de player la función Movement
-Player.prototype.Movement = function(vel)
+Player.prototype.Movement = function()
 {
+if(akey.isDown){
+  createSecondPlayer();
+}
+
   if (leftKey.isDown)
   {
-      this.body.x -= vel;
+      this.body.x -= this._velocity;
 
   }
   else if (rightKey.isDown)
   {
-    this.body.x += vel;
+    this.body.x += this._velocity;
 
   }
 
   if (upKey.isDown)
   {
-    this.body.y -= vel * 0.5;
+    this.body.y -= this._velocity * 0.5;
       player.frameName = 'down';
   }
   else if (downKey.isDown)
   {
-    this.body.y += vel * 0.5;
+    this.body.y += this._velocity * 0.5;
       player.frameName = 'up';
   }  else {
     player.frameName = 'front';
@@ -339,8 +431,64 @@ Player.prototype.Movement = function(vel)
 
 Player.prototype.update = function()
 {
-  this.Movement(playerVel);
+  this.Movement();
 }
+
+function Player2(game, position, sprite, velocity, lives, father)
+{
+  Destroyable.apply(this, [game, position, sprite, velocity, lives]);
+  this._father = father;
+}
+
+Player2.prototype = Object.create(Destroyable.prototype);
+Player2.prototype.constructor = Player2;
+
+//Métodos de la clase Player
+//Permite al player moverse con los cursores
+// añade al prototipo de player la función Movement
+Player2.prototype.Movement = function()
+{
+  
+    this.body.x = this._father.body.x -  50;
+
+    this.body.y =  this._father.body.y + 50 ;
+
+  if (upKey.isDown)
+  {
+    this._father.frameName = 'down';
+  }
+  else if (downKey.isDown)
+  {
+    this._father.frameName = 'up';
+  }  else {
+    this._father.frameName = 'front';
+  }
+
+  if(spacebarKey.isDown)
+  {
+    weapons[0].fire(player2);
+  }
+
+}
+
+Player2.prototype.update = function()
+{
+  this.Movement();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //NUEVAS CLASES BALAS MEJORADAS
 function Bullet (game, sprite)
