@@ -119,6 +119,7 @@ var PlayScene =
     weapons.push(new Weapon.UpFront(this.game));
     weapons.push(new Weapon.FrontDown(this.game));
     weapons.push(new Weapon.ThreeWay(this.game));
+    weapons.push(new Weapon.Laser(this.game));
     currentWeapon = 3;
     /*
     for(var i = 1; i < weapons.length; i++)
@@ -195,10 +196,10 @@ var PlayScene =
     
     this.game.physics.arcade.collide(player, this.colisiones);
 
-    this.game.physics.arcade.overlap(bullets_1, enemy_1, collisionHandler, null, this);
-    this.game.physics.arcade.overlap(bullets_1, enemy_2, collisionHandler, null, this);
-    this.game.physics.arcade.overlap(bullets_1, enemy_3, collisionHandler, null, this);
-    this.game.physics.arcade.overlap(bullets_1, enemy_4, collisionHandler, null, this);
+    this.game.physics.arcade.overlap(weapons[currentWeapon], enemy_1, collisionHandler, null, this);
+    this.game.physics.arcade.overlap(weapons[currentWeapon], enemy_2, collisionHandler, null, this);
+    this.game.physics.arcade.overlap(weapons[currentWeapon], enemy_3, collisionHandler, null, this);
+    this.game.physics.arcade.overlap(weapons[currentWeapon], enemy_4, collisionHandler, null, this);
     this.game.physics.arcade.overlap(player, enemy_1, collisionHandler, null, this);
     this.game.physics.arcade.overlap(player, enemy_2, collisionHandler, null, this);
     this.game.physics.arcade.overlap(player, enemy_3, collisionHandler, null, this);
@@ -462,61 +463,97 @@ Weapon.SingleBullet = function (game)
     
   };
     
-    Weapon.FrontDown.prototype = Object.create(Phaser.Group.prototype);
-    Weapon.FrontDown.prototype.constructor = Weapon.FrontDown;
+  Weapon.FrontDown.prototype = Object.create(Phaser.Group.prototype);
+  Weapon.FrontDown.prototype.constructor = Weapon.FrontDown;
     
-    Weapon.FrontDown.prototype.fire = function (source)
-    {
+  Weapon.FrontDown.prototype.fire = function (source)
+  {
     
-      if (this.game.time.time < this.nextFire) { return; }
+    if (this.game.time.time < this.nextFire) { return; }
     
-        var x = source.x + 10;
-        var y = source.y + 10;
+      var x = source.x + 10;
+      var y = source.y + 10;
     
-        this.getFirstExists(false).fire(x, y, 0, this.bulletSpeed, 0, 0);
-        this.getFirstExists(false).fire(x, y, 45, this.bulletSpeed, 0, 0);
+      this.getFirstExists(false).fire(x, y, 0, this.bulletSpeed, 0, 0);
+      this.getFirstExists(false).fire(x, y, 45, this.bulletSpeed, 0, 0);
   
-        this.nextFire = this.game.time.time + this.fireRate;
+      this.nextFire = this.game.time.time + this.fireRate;
     
-    };
+   };
 
-    //Bala que va hacia delante, arriba y abajo
-    Weapon.ThreeWay = function (game) 
+  //Bala que va hacia delante, arriba y abajo
+  Weapon.ThreeWay = function (game) 
+  {
+      
+    Phaser.Group.call(this, game, game.world, 'ThreeWay', false, true, Phaser.Physics.ARCADE);
+      
+    this.nextFire = 0;
+    this.bulletSpeed = 600;
+    this.fireRate = 100;
+      
+    for (var i = 0; i < 64; i++)
     {
+      this.add(new Bullet(game, 'bullet_1'), true);
+    }
       
-      Phaser.Group.call(this, game, game.world, 'ThreeWay', false, true, Phaser.Physics.ARCADE);
+    return this;
       
-      this.nextFire = 0;
-      this.bulletSpeed = 600;
-      this.fireRate = 100;
+  };
       
-      for (var i = 0; i < 64; i++)
-      {
-         this.add(new Bullet(game, 'bullet_1'), true);
-      }
+  Weapon.ThreeWay.prototype = Object.create(Phaser.Group.prototype);
+  Weapon.ThreeWay.prototype.constructor = Weapon.ThreeWay;
       
-      return this;
+  Weapon.ThreeWay.prototype.fire = function (source)
+  {
       
-    };
+    if (this.game.time.time < this.nextFire) { return; }
       
-      Weapon.ThreeWay.prototype = Object.create(Phaser.Group.prototype);
-      Weapon.ThreeWay.prototype.constructor = Weapon.ThreeWay;
+      var x = source.x + 10;
+      var y = source.y + 10;
       
-      Weapon.ThreeWay.prototype.fire = function (source)
-      {
-      
-        if (this.game.time.time < this.nextFire) { return; }
-      
-          var x = source.x + 10;
-          var y = source.y + 10;
-      
-          this.getFirstExists(false).fire(x, y, 0, this.bulletSpeed, 0, 0);
-          this.getFirstExists(false).fire(x, y, 45, this.bulletSpeed, 0, 0);
-          this.getFirstExists(false).fire(x, y, -45, this.bulletSpeed, 0, 0);
+      this.getFirstExists(false).fire(x, y, 0, this.bulletSpeed, 0, 0);
+      this.getFirstExists(false).fire(x, y, 45, this.bulletSpeed, 0, 0);
+      this.getFirstExists(false).fire(x, y, -45, this.bulletSpeed, 0, 0);
     
-          this.nextFire = this.game.time.time + this.fireRate;
+      this.nextFire = this.game.time.time + this.fireRate;
       
-      };
+  };
+
+  //Tipo de bala Láser, no se destruye al chocar contra enemigos
+  Weapon.Laser = function (game) 
+  {
+        
+    Phaser.Group.call(this, game, game.world, 'Laser', false, true, Phaser.Physics.ARCADE);
+        
+    this.nextFire = 0;
+    this.bulletSpeed = 600;
+    this.fireRate = 100;
+        
+    for (var i = 0; i < 64; i++)
+    {
+      this.add(new Bullet(game, 'laser'), true);
+    }
+        
+    return this;
+        
+  };
+        
+  Weapon.Laser.prototype = Object.create(Phaser.Group.prototype);
+  Weapon.Laser.prototype.constructor = Weapon.Laser;
+        
+  Weapon.Laser.prototype.fire = function (source)
+  {
+        
+    if (this.game.time.time < this.nextFire) { return; }
+        
+      var x = source.x + 10;
+      var y = source.y + 10;
+        
+      this.getFirstExists(false).fire(x, y, 0, this.bulletSpeed, 0, 0);
+      
+      this.nextFire = this.game.time.time + this.fireRate;
+        
+  };
 
 //Enemigos
 function Enemy(game, position, sprite, velocity, lives)

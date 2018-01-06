@@ -56,6 +56,7 @@ var PreloaderScene = {
     
     //Cargas de las balas
     this.game.load.image('bullet_1', IMAGE_PATH + 'bullet1.png');
+    this.game.load.image('laser', IMAGE_PATH + 'laser.png');
 
 
     //cargas necesarias para el tiled y el mapa
