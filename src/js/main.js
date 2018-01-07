@@ -60,7 +60,7 @@ var PreloaderScene = {
 
 
     //cargas necesarias para el tiled y el mapa
-    this.load.tilemap('level', './images/object.json', null, Phaser.Tilemap.TILED_JSON);
+    this.load.tilemap('level', './images/nivelGdiameter.json', null, Phaser.Tilemap.TILED_JSON);
     this.game.load.image('tilespng', 'images/tiles.png');
   },
 

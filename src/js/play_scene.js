@@ -16,9 +16,6 @@ var naveEspacial;
 var secondPlayerAlive = false;
 var player2;
 
-
-
-
 var enemyArray = [];
 var playerArray = [];
 
@@ -27,10 +24,16 @@ var playerArray = [];
 var player;
 var playerVel = 10;
 var playerLives = 3;
+var shield = false;
+var shield_resistance = 6;
 
 var weapons = [];
 var currentWeapon = 0;
 
+//PowerUps
+var upgrades = [];
+var currentUpgrade = 0;
+var powerup;
 
 var playerAlive = true;
 
@@ -132,6 +135,7 @@ var PlayScene =
     this.game.world.addChild(player);
     player.body.collideWorldBounds = true;
     */
+ 
 
     weapons.push(new Weapon.SingleBullet(this.game));
     weapons.push(new Weapon.UpFront(this.game));
@@ -145,6 +149,16 @@ var PlayScene =
       weapons[i].visible = false;
     }
     */
+
+    upgrades.push("Empty");  //Vacío
+    upgrades.push("Speed");  //Para más velocidad
+    upgrades.push("Double"); //Double
+    upgrades.push("Misile"); //Misile
+    upgrades.push("Laser"); //Laser
+    upgrades.push("Option");  //Option
+    upgrades.push("?")  //?(shield)
+
+
     //Enemy_1   
     var enemy_1Pos = new pos(this.game.world.width - 200, this.game.world.centerY - 100);
     enemy_1 = new Enemy_1(this.game, enemy_1Pos, 'enemy_1', enemy_1Vel, enemy_1Lives);
@@ -250,20 +264,49 @@ var PlayScene =
     this.game.physics.arcade.overlap(weapons[currentWeapon], enemy_2, collisionHandler, null, this);
     this.game.physics.arcade.overlap(weapons[currentWeapon], enemy_3, collisionHandler, null, this);
     this.game.physics.arcade.overlap(weapons[currentWeapon], enemy_4, collisionHandler, null, this);
-    this.game.physics.arcade.overlap(player, enemy_1, collisionHandler, null, this);
-    this.game.physics.arcade.overlap(player, enemy_2, collisionHandler, null, this);
-    this.game.physics.arcade.overlap(player, enemy_3, collisionHandler, null, this);
-    this.game.physics.arcade.overlap(player, enemy_4, collisionHandler, null, this);
 
-    
+    if(this.game.physics.arcade.overlap(player, enemy_1) || this.game.physics.arcade.overlap(player, enemy_2) ||
+    this.game.physics.arcade.overlap(player, enemy_3) || this.game.physics.arcade.overlap(player, enemy_4))
+    {
+      if(shield)
+      {
+        this.game.physics.arcade.overlap(enemy_1, player, collisionHandler2, null, this);
+        this.game.physics.arcade.overlap(enemy_2, player, collisionHandler2, null, this);
+        this.game.physics.arcade.overlap(enemy_3, player, collisionHandler2, null, this);
+        this.game.physics.arcade.overlap(enemy_4, player, collisionHandler2, null, this);
+        shield_resistance--;
+        if(shield_resistance <= 0)
+        {
+          shield = false;
+          shield_resistance = 6;
+        } 
+        console.log(shield_resistance);
+      }
+      else
+      {
+        this.game.physics.arcade.overlap(player, enemy_1, collisionHandler, null, this);
+        this.game.physics.arcade.overlap(player, enemy_2, collisionHandler, null, this);
+        this.game.physics.arcade.overlap(player, enemy_3, collisionHandler, null, this);
+        this.game.physics.arcade.overlap(player, enemy_4, collisionHandler, null, this);
+      }
+    }
 
+    if(this.game.physics.arcade.overlap(player, powerup))
+    {
+      currentUpgrade++;
+      if(currentUpgrade > upgrades.size())
+      {
+        currentUpgrade = 0;
+      }
+    }
 
     this.game.camera.x = target.x;
 
     if(player.x<target.x)
     player.x = target.x;
 
-    for(var i = 0; i<enemyArray.length; i++ ){
+    for(var i = 0; i<enemyArray.length; i++ )
+    {
       this.game.debug.body(enemyArray[i]);
     }
 
@@ -272,6 +315,8 @@ var PlayScene =
 
 
     }
+
+    
 
     this.game.debug.body(player);
     this.game.debug.body(enemy_4);
@@ -837,10 +882,6 @@ Enemy_3.prototype.Movement = function(vel)
 
 Enemy_3.prototype.update = function()
 {
-  console.log(this._iniY);
-  console.log(this._max_y)
-  console.log(this._iniY + this._max_y);
-  console.log(this.y);
   this.Movement(enemy_3Vel);
 }
 
