@@ -2,7 +2,8 @@
 
 var akey;
 var nuestroJuego;
-
+var nuestraCamara;
+var creado = false;
 
 var upKey;
 var downKey;
@@ -11,7 +12,22 @@ var rightKey;
 var spacebarKey;
 
 
-var d; 
+var arrayPosicionesEnemigos_1 = [];
+var arrayPosicionesEnemigos_2 = [];
+var arrayPosicionesEnemigos_3 = [];
+var arrayPosicionesEnemigos_4 = [];
+
+var arrayX_Enemy_1 = [];
+var arrayX_Enemy_2 = [];
+var arrayX_Enemy_3 = [];
+var arrayX_Enemy_4 = [];
+
+var enemy_1_TiledToPhaser; 
+var enemy_2_TiledToPhaser; 
+var enemy_3_TiledToPhaser; 
+var enemy_4_TiledToPhaser; 
+
+
 var naveEspacial;
 var secondPlayerAlive = false;
 var player2;
@@ -39,11 +55,11 @@ var playerAlive = true;
 
 var target;
 var target2;
-var target_vel;
+var target_vel = 1;
 
 //Enemigo que avanza un poco y retrocede en diagonal
 var enemy_1;
-var enemy_1Vel = 1
+var enemy_1Vel = 2;
 var enemy_1Lives = 1;
 
 
@@ -52,17 +68,17 @@ var enemy_aaronLives = 1;
 
 //Enemigo que avanza en línea recta y va hacia el player
 var enemy_2;
-var enemy_2Vel = 1
+var enemy_2Vel = 3;
 var enemy_2Lives = 1;
 
 //Enemigo que sube y baja mientras avanza
 var enemy_3;
-var enemy_3Vel = 1
+var enemy_3Vel = 1;
 var enemy_3Lives = 1;
 
 //Enemigo que alcanza la y del player y avanza en ese sentido
 var enemy_4;
-var enemy_4Vel = 1
+var enemy_4Vel = 1;
 var enemy_4Lives = 1;
 
 //Balas
@@ -88,6 +104,7 @@ var PlayScene =
   create: function () 
   {
     nuestroJuego = this.game;
+    nuestraCamara = this.game.camera;
 
     this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
@@ -142,7 +159,7 @@ var PlayScene =
     weapons.push(new Weapon.FrontDown(this.game));
     weapons.push(new Weapon.ThreeWay(this.game));
     weapons.push(new Weapon.Laser(this.game));
-    currentWeapon = 3;
+    currentWeapon = 0;
     /*
     for(var i = 1; i < weapons.length; i++)
     {
@@ -160,12 +177,16 @@ var PlayScene =
 
 
     //Enemy_1   
+    /*
     var enemy_1Pos = new pos(this.game.world.width - 200, this.game.world.centerY - 100);
     enemy_1 = new Enemy_1(this.game, enemy_1Pos, 'enemy_1', enemy_1Vel, enemy_1Lives);
-    enemy_1.anchor.setTo(0.5, 0.5);
-    enemy_1.scale.setTo(0.5, 0.5);
     this.game.physics.arcade.enable(enemy_1);
     this.game.world.addChild(enemy_1);
+    enemy_1.anchor.setTo(0.5, 0.5);
+    enemy_1.scale.setTo(0.5, 0.5);
+
+    enemyArray.push(enemy_1);
+    */
 
     //enemy_aaron
     /*
@@ -178,14 +199,16 @@ var PlayScene =
 
 
 //para que colisione correctamente al impactar contra los elementos es necesario que 
-
+// vamos a poner un enemy2
+/*
     //Enemy_2 
     var enemy_2Pos = new pos(this.game.world.width, this.game.world.centerY);
     enemy_2 = new Enemy_2(this.game, enemy_2Pos, 'enemy_2', enemy_2Vel, enemy_2Lives);
     enemy_2.anchor.setTo(0.5, 0.5);
-    enemy_2.scale.setTo(0.5, 0.5);
+    enemy_2.scale.setTo(0.1, 0.1);
     this.game.physics.arcade.enable(enemy_2);
     this.game.world.addChild(enemy_2);
+
 
     //Enemy_3 
     var enemy_3Pos = new pos(this.game.world.width, this.game.world.centerY - 60);
@@ -203,24 +226,16 @@ var PlayScene =
      this.game.physics.arcade.enable(enemy_4);
      this.game.world.addChild(enemy_4);
 
-     
+    */
     //el target debería heredar de sprite, de la clase movable, y no directamente de sprite.
 
-    target= this.game.add.sprite(
+    target = this.game.add.sprite(
     this.game.world.width, this.game.world.centerY);
     target.anchor.setTo(0.5, 0.5);
     target.scale.setTo(0.25, 0.25);
     target.x = 0;
 
     colisiones.resizeWorld();
-
-    d = this.game.add.physicsGroup();
-    map.createFromObjects('objetos', 'n', '', 779, true, false, d);// asÃ­ funciona igual , para la nave no nos hace falta poner el grupo
-    d.forEach(function(integrante){
-      // nos da la poiscion de cada uno de los integrantes
-      var enePos = new pos(integrante.x, integrante.y);
-      crea(nuestroJuego, enePos,'enemy_1',enemy_1Vel,enemy_1Lives );
-  });    
 
   //player
   naveEspacial = this.game.add.physicsGroup();
@@ -239,6 +254,51 @@ var PlayScene =
 
 });    
 
+    enemy_1_TiledToPhaser = this.game.add.physicsGroup();
+    map.createFromObjects('objetos', 'enemy_1', '', 779, true, false, enemy_1_TiledToPhaser);// asÃ­ funciona igual , para la nave no nos hace falta poner el grupo
+    enemy_1_TiledToPhaser.forEach(function(integrante){
+      // nos da la poiscion de cada uno de los integrante
+      var enePos = new pos(integrante.x, integrante.y);
+      arrayPosicionesEnemigos_1.push(enePos);
+      arrayX_Enemy_1.push(integrante.x);
+      //crea(nuestroJuego, arrayPosicionesEnemigos1[arrayPosicionesEnemigos1.length-1],'enemy_1',enemy_1Vel,enemy_1Lives);
+  });    
+
+  enemy_2_TiledToPhaser = this.game.add.physicsGroup();
+  map.createFromObjects('objetos', 'enemy_2', '', 4792, true, false, enemy_2_TiledToPhaser);// asÃ­ funciona igual , para la nave no nos hace falta poner el grupo
+  enemy_2_TiledToPhaser.forEach(function(integrante2){
+    // nos da la poiscion de cada uno de los integrante
+    var enePos2 = new pos(integrante2.x, integrante2.y);
+    arrayPosicionesEnemigos_2.push(enePos2);
+    arrayX_Enemy_2.push(integrante2.x);
+    //crea(nuestroJuego, arrayPosicionesEnemigos1[arrayPosicionesEnemigos1.length-1],'enemy_1',enemy_1Vel,enemy_1Lives);
+});    
+
+enemy_3_TiledToPhaser = this.game.add.physicsGroup();
+map.createFromObjects('objetos', 'enemy_3', '', 4978, true, false, enemy_3_TiledToPhaser);// asÃ­ funciona igual , para la nave no nos hace falta poner el grupo
+enemy_3_TiledToPhaser.forEach(function(integrante3){
+  // nos da la poiscion de cada uno de los integrante
+  var enePos3 = new pos(integrante3.x, integrante3.y);
+  arrayPosicionesEnemigos_3.push(enePos3);
+  arrayX_Enemy_3.push(integrante3.x);
+  //crea(nuestroJuego, arrayPosicionesEnemigos1[arrayPosicionesEnemigos1.length-1],'enemy_1',enemy_1Vel,enemy_1Lives);
+});    
+
+
+enemy_4_TiledToPhaser = this.game.add.physicsGroup();
+map.createFromObjects('objetos', 'enemy_4', '', 4782, true, false, enemy_4_TiledToPhaser);// asÃ­ funciona igual , para la nave no nos hace falta poner el grupo
+enemy_4_TiledToPhaser.forEach(function(integrante4){
+  // nos da la poiscion de cada uno de los integrante
+  var enePos4 = new pos(integrante4.x, integrante4.y);
+  arrayPosicionesEnemigos_4.push(enePos4);
+  arrayX_Enemy_4.push(integrante4.x);
+  //crea(nuestroJuego, arrayPosicionesEnemigos1[arrayPosicionesEnemigos1.length-1],'enemy_1',enemy_1Vel,enemy_1Lives);
+});    
+
+
+
+
+
     
   },
 
@@ -248,14 +308,48 @@ var PlayScene =
     
 
     if(target.x < this.game.world.width - this.game.camera.width)
-    target.x +=1;
+    target.x +=target_vel;
 
     colisiones.debug = true;
     
     this.game.physics.arcade.collide(player, this.colisiones);
 
-        for(var i = 0; i<enemyArray.length; i++ ){
-      this.game.physics.arcade.overlap(weapons[currentWeapon], enemyArray[i], collisionHandler, null, this);
+    spawnEnemy(arrayX_Enemy_1, arrayPosicionesEnemigos_1, 'enemy_1', enemy_1Vel, enemy_1Lives, 1);
+    spawnEnemy(arrayX_Enemy_2, arrayPosicionesEnemigos_2, 'enemy_2', enemy_2Vel, enemy_2Lives, 2);
+    spawnEnemy(arrayX_Enemy_3, arrayPosicionesEnemigos_3, 'enemy_3', enemy_3Vel, enemy_3Lives, 3);
+    spawnEnemy(arrayX_Enemy_4, arrayPosicionesEnemigos_4, 'enemy_4', enemy_4Vel, enemy_4Lives, 4);
+
+    /*
+    for(var j = 0; j<arrayPosicionesEnemigos_1.length; j++ ){
+      if(canICreateMyself(arrayX_Enemy_1[j])){
+        createEnemy_1(nuestroJuego, arrayPosicionesEnemigos_1[j],'enemy_1',enemy_1Vel,enemy_1Lives);
+      }
+    }
+
+    for(var j = 0; j<arrayPosicionesEnemigos_1.length; j++ ){
+      if(canICreateMyself(arrayX_Enemy_1[j])){
+        arrayX_Enemy_1.splice(j,1);
+        arrayPosicionesEnemigos_1.splice(j,1);
+      }
+    }
+
+    for(var j = 0; j<arrayPosicionesEnemigos_2.length; j++ ){
+      if(canICreateMyself(arrayX_Enemy_2[j])){
+        createEnemy_2(nuestroJuego, arrayPosicionesEnemigos_2[j],'enemy_2',enemy_2Vel,enemy_2Lives);
+      }
+    }
+
+    for(var j = 0; j<arrayPosicionesEnemigos_2.length; j++ ){
+      if(canICreateMyself(arrayX_Enemy_2[j])){
+        arrayX_Enemy_2.splice(j,1);
+        arrayPosicionesEnemigos_2.splice(j,1);
+      }
+    }
+
+*/
+
+    for(var i = 0; i<enemyArray.length; i++ ){
+        this.game.physics.arcade.overlap(weapons[currentWeapon], enemyArray[i], collisionHandler, null, this);
         this.game.physics.arcade.overlap(player, enemyArray[i], collisionHandler, null, this);
     }
 
@@ -300,7 +394,10 @@ var PlayScene =
       }
     }
 
-    this.game.camera.x = target.x;
+    //this.game.camera.x = target.x;
+
+
+    nuestraCamara.x = target.x;
 
     if(player.x<target.x)
     player.x = target.x;
@@ -309,17 +406,9 @@ var PlayScene =
     {
       this.game.debug.body(enemyArray[i]);
     }
-
-    if(secondPlayerAlive)
-    {
-
-
-    }
-
     
 
     this.game.debug.body(player);
-    this.game.debug.body(enemy_4);
   },
 
 };   
@@ -352,6 +441,40 @@ function start(){
 
 }
 
+function canICreateMyself(posX){
+  if(posX < nuestraCamara.x + nuestraCamara.width + 1000){ return true; }
+  else return false;
+}
+
+function isOnCamera(posX){
+if(posX < nuestraCamara.x + nuestraCamara.width + 20){ return true; }
+else return false;
+}
+
+function spawnEnemy(enemy_x_array, enemy_pos_array, enemySpriteName, enemyVel,enemyLives, enemy_Type){ 
+
+  for(var j = 0;  j <enemy_pos_array.length; j++ ){
+    if(canICreateMyself(enemy_x_array[j])){
+      if(enemy_Type===1)
+      createEnemy_1(nuestroJuego, enemy_pos_array[j],enemySpriteName,enemyVel,enemyLives);
+      else if(enemy_Type===2)
+      createEnemy_2(nuestroJuego, enemy_pos_array[j],enemySpriteName,enemyVel,enemyLives);
+      else if(enemy_Type===3)
+      createEnemy_3(nuestroJuego, enemy_pos_array[j],enemySpriteName,enemyVel,enemyLives);
+      else if(enemy_Type===4)
+      createEnemy_4(nuestroJuego, enemy_pos_array[j],enemySpriteName,enemyVel,enemyLives);
+    }
+  }
+
+  for(var i= 0; i < enemy_pos_array.length; i++ ){
+    if(canICreateMyself(enemy_x_array[i])){
+      enemy_pos_array.splice(i,1);
+      enemy_x_array.splice(i,1);
+    }
+  }
+
+}
+
 function soundStopped(sound){
 
 }
@@ -376,13 +499,45 @@ function movimiento(objeto, velocidad){
   objeto.x +=1;
 }
 
-function crea(juego, posicion, spriteName, velocidad, vidas){
+//función que pawnea un enemigo
+
+function createEnemy_1(juego, posicion, spriteName, velocidad, vidas, nombre){
   var ene = new Enemy_1(juego, posicion, spriteName, velocidad, vidas);
   ene.anchor.setTo(0.5, 0.5);
   ene.scale.setTo(0.5, 0.5);
   juego.physics.arcade.enable(ene);
   juego.world.addChild(ene);
   enemyArray.push(ene);
+
+}
+
+function createEnemy_2(juego, posicion, spriteName, velocidad, vidas, nombre){
+  var ene2 = new Enemy_2(juego, posicion, spriteName, velocidad, vidas);
+  ene2.anchor.setTo(0.5, 0.5);
+  ene2.scale.setTo(0.1, 0.1);
+  juego.physics.arcade.enable(ene2);
+  juego.world.addChild(ene2);
+  enemyArray.push(ene2);
+
+}
+
+function createEnemy_3(juego, posicion, spriteName, velocidad, vidas, nombre){
+  var ene3 = new Enemy_3(juego, posicion, spriteName, velocidad, vidas);
+  ene3.anchor.setTo(0.5, 0.5);
+  ene3.scale.setTo(0.3, 0.3);
+  juego.physics.arcade.enable(ene3);
+  juego.world.addChild(ene3);
+  enemyArray.push(ene3);
+
+}
+
+function createEnemy_4(juego, posicion, spriteName, velocidad, vidas, nombre){
+  var ene4 = new Enemy_4(juego, posicion, spriteName, velocidad, vidas);
+  ene4.anchor.setTo(0.5, 0.5);
+  ene4.scale.setTo(0.5, 0.5);
+  juego.physics.arcade.enable(ene4);
+  juego.world.addChild(ene4);
+  enemyArray.push(ene4);
 
 }
 
@@ -440,8 +595,11 @@ Player.prototype.constructor = Player;
 Player.prototype.Movement = function()
 {
 if(akey.isDown){
-  createSecondPlayer();
+  //createSecondPlayer();
 }
+
+this.body.x += target_vel;
+
 
   if (leftKey.isDown)
   {
@@ -790,29 +948,33 @@ function Enemy_1(game, position, sprite, velocity, lives)
 Enemy_1.prototype = Object.create(Enemy.prototype);
 Enemy_1.prototype.constructor = Enemy_1;
 
-var Enemy_1Mov = false;
 
-Enemy_1.prototype.Movement = function(vel)
+
+Enemy_1.prototype.Movement = function()
 {
-  if(this.x > this.game.world.centerX && !Enemy_1Mov)
+  this.Enemy_1Mov = false;
+
+  if(this.x > this.game.camera.x + this.game.camera.width / 2 && !this.Enemy_1Mov)
   {
-    this.move_along_enemy(vel);
+    this.move_along_enemy(this._velocity);
   }
   else
   {
-    this.x += vel;
-    if(this.x < this.game.world.centerX + 100)
+    this.x += this._velocity;
+    if(this.x < this.game.camera.x + this.game.camera.width / 2 + 100)
     {
-      this.y += vel;
+      this.y += this._velocity;
+      this.x-= 2 * target_vel;
     }
     
-    Enemy_1Mov = true;
+    this.Enemy_1Mov = true;
   }
 }
 
 Enemy_1.prototype.update = function()
 {
-  this.Movement(enemy_1Vel);
+  if(isOnCamera(this.x))
+ this.Movement();
 }
 
 //Clase enemy 2
@@ -841,32 +1003,35 @@ Enemy_2.prototype.Movement = function(vel)
 
 Enemy_2.prototype.update = function()
 {
+  if(isOnCamera(this.x))
   this.Movement(enemy_2Vel);
 }
 
 //Clase enemy 3
-function Enemy_3(game, position, sprite, velocity, lives, max_y)
+function Enemy_3(game, position, sprite, velocity, lives)
 {
   Enemy.apply(this, [game, position, sprite, velocity, lives]);
-  this._max_y = max_y;
+
   this._iniY = position._y;
 }
 
 Enemy_3.prototype = Object.create(Enemy.prototype);
 Enemy_3.prototype.constructor = Enemy_3;
 
-var up = false;
 
-Enemy_3.prototype.Movement = function(vel)
+
+Enemy_3.prototype.Movement = function()
 {
-  this.move_along_enemy(vel);
+  this._max_y = 80;
+  this._up = false;
+  this.move_along_enemy(this._velocity);
   
-  if(!up)
+  if(!this._up)
   {  
     this.y++;
     if(this.y === (this._iniY + this._max_y))
     {
-      up = true;
+      this._up = true;
     }
   }
   else
@@ -874,7 +1039,7 @@ Enemy_3.prototype.Movement = function(vel)
     this.y--;
     if(this.y === (this._iniY - this._max_y))
     {
-      up = false;
+      this._up = false;
     }
   }
     
@@ -882,7 +1047,8 @@ Enemy_3.prototype.Movement = function(vel)
 
 Enemy_3.prototype.update = function()
 {
-  this.Movement(enemy_3Vel);
+  if(isOnCamera(this.x))
+  this.Movement();
 }
 
 //Clase enemy 4
@@ -894,51 +1060,54 @@ function Enemy_4(game, position, sprite, velocity, lives)
 Enemy_4.prototype = Object.create(Enemy.prototype);
 Enemy_4.prototype.constructor = Enemy_4;
 
-var found = false;
-var localized = false;
-var upMovement = false;
-var downMovement = false;
-Enemy_4.prototype.Movement = function(vel)
+
+Enemy_4.prototype.Movement = function()
 {
 
-  if(!localized)
+  this._found = false;
+  this._localized = false;
+  this._upMovement = false;
+  this._downMovement = false;
+
+  if(!this._localized)
   {
     if(this.y > player.y)
     {
-      upMovement = true;
+      this._upMovement = true;
     }
     else
     {
-      downMovement = true;
+      this._downMovement = true;
     }
 
-    localized = true;
+    this._localized = true;
   }
 
-  if(upMovement && !found)
+  if(this._upMovement && !this._found)
   {
     this.y--;
   }
-  else if(downMovement && !found)
+  else if(this._downMovement && !this._found)
   {
     this.y++;
   }
 
   if(this.y === player.y)
   {
-    found = true;
+    this._found= true;
   }
 
-  if(found)
+  if(this._found)
   {
-    this.move_along_enemy(vel);
+    this.move_along_enemy(this._velocity);
   }
   
 }
 
 Enemy_4.prototype.update = function()
 {
-  this.Movement(enemy_4Vel);
+  if(isOnCamera(this.x))
+  this.Movement();
 }
 
 module.exports = PlayScene;

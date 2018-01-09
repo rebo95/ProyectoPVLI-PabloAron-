@@ -28,7 +28,7 @@ var PreloaderScene = {
     this.load.setPreloadSprite(this.loadingBar);
 
 
-    
+
 
     //Menu assets
     this.game.load.image('titlescreen', IMAGE_PATH + 'Gradius.jpg');
@@ -50,9 +50,9 @@ var PreloaderScene = {
     
     //Cargas de los enemigos
     this.game.load.image('enemy_1', IMAGE_PATH + 'meteorite.png');
-    this.game.load.image('enemy_2', IMAGE_PATH + 'meteorite.png');
-    this.game.load.image('enemy_3', IMAGE_PATH + 'meteorite.png');
-    this.game.load.image('enemy_4', IMAGE_PATH + 'meteorite.png');
+    this.game.load.image('enemy_2', IMAGE_PATH + 'n.png');
+    this.game.load.image('enemy_3', IMAGE_PATH + 'futurama.png');
+    this.game.load.image('enemy_4', IMAGE_PATH + 'Power_Up.png');
     
     //Cargas de las balas
     this.game.load.image('bullet_1', IMAGE_PATH + 'bullet1.png');
