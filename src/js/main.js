@@ -48,6 +48,8 @@ var PreloaderScene = {
     
     this.game.load.atlas('naves',  IMAGE_PATH + 'naveSprite.png',  IMAGE_PATH + 'naveJson.json');
     
+    this.game.load.image('power_up', IMAGE_PATH + 'PowerUp_1.png')
+
     //Cargas de los enemigos
     this.game.load.image('enemy_1', IMAGE_PATH + 'meteorite.png');
     this.game.load.image('enemy_2', IMAGE_PATH + 'n.png');

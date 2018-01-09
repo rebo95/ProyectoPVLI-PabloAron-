@@ -10,6 +10,7 @@ var downKey;
 var leftKey;
 var rightKey;
 var spacebarKey;
+var xKey;
 
 
 var arrayPosicionesEnemigos_1 = [];
@@ -38,7 +39,7 @@ var playerArray = [];
 
 //Player
 var player;
-var playerVel = 10;
+var playerVel = 3;
 var playerLives = 3;
 var shield = false;
 var shield_resistance = 6;
@@ -48,7 +49,7 @@ var currentWeapon = 0;
 
 //PowerUps
 var upgrades = [];
-var currentUpgrade = 0;
+var currentUpgrade = 2;
 var powerup;
 
 var playerAlive = true;
@@ -129,6 +130,7 @@ var PlayScene =
     leftKey = this.game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
     rightKey = this.game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
     spacebarKey = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+    xKey = this.game.input.keyboard.addKey(Phaser.Keyboard.X);
 
     //sound effects
 
@@ -160,12 +162,13 @@ var PlayScene =
     weapons.push(new Weapon.ThreeWay(this.game));
     weapons.push(new Weapon.Laser(this.game));
     currentWeapon = 0;
-    /*
-    for(var i = 1; i < weapons.length; i++)
+
+    
+    for(var i = 0; i < weapons.length; i++)
     {
-      weapons[i].visible = false;
+      weapons[i].outOfBoundsKill = true;
     }
-    */
+    
 
     upgrades.push("Empty");  //Vacío
     upgrades.push("Speed");  //Para más velocidad
@@ -251,7 +254,6 @@ var PlayScene =
     player.body.collideWorldBounds = true;
     playerArray.push(player);
 
-
 });    
 
     enemy_1_TiledToPhaser = this.game.add.physicsGroup();
@@ -294,11 +296,6 @@ enemy_4_TiledToPhaser.forEach(function(integrante4){
   arrayX_Enemy_4.push(integrante4.x);
   //crea(nuestroJuego, arrayPosicionesEnemigos1[arrayPosicionesEnemigos1.length-1],'enemy_1',enemy_1Vel,enemy_1Lives);
 });    
-
-
-
-
-
     
   },
 
@@ -387,10 +384,11 @@ enemy_4_TiledToPhaser.forEach(function(integrante4){
 
     if(this.game.physics.arcade.overlap(player, powerup))
     {
+      collisionHandler2(powerup, player);
       currentUpgrade++;
       if(currentUpgrade > upgrades.size())
       {
-        currentUpgrade = 0;
+        currentUpgrade = 1;
       }
     }
 
@@ -555,7 +553,35 @@ function createSecondPlayer(vidas){
   
 }
 
+function upgradesHandler(n)
+{
+  if(n === 1)
+  {
+    playerVel += 0.5;
+  }
+  else if(n == 2)
+  {
+    currentWeapon = 1;
+  }
+  else if(n == 3)
+  {
+    currentWeapon = 2;
+  }
+  else if(n == 4)
+  {
+    currentWeapon = 4;
+  }
+  else if(n == 5)
+  {
+    //Hay que llamar a la nave auxiliar
+  }
+  else if(n == 6)
+  {
+    shield = true;
+  }
 
+
+}
 
 
 
@@ -629,6 +655,10 @@ this.body.x += target_vel;
   {
     weapons[currentWeapon].fire(player);
   }
+  if(xKey.isDown && currentUpgrade > 0)
+  {
+    upgradesHandler(currentUpgrade);
+  }
 
 }
 
@@ -672,21 +702,13 @@ Player2.prototype.Movement = function()
     weapons[0].fire(player2);
   }
 
+
 }
 
 Player2.prototype.update = function()
 {
   this.Movement();
 }
-
-
-
-
-
-
-
-
-
 
 
 
@@ -734,8 +756,8 @@ Weapon.SingleBullet = function (game)
   Phaser.Group.call(this, game, game.world, 'Single Bullet', false, true, Phaser.Physics.ARCADE);
   
   this.nextFire = 0;
-  this.bulletSpeed = 600;
-  this.fireRate = 100;
+  this.bulletSpeed = 350;
+  this.fireRate = 60;
   
   for (var i = 0; i < 64; i++)
   {
