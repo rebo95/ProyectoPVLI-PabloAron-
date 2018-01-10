@@ -313,8 +313,10 @@ enemy_4_TiledToPhaser.forEach(function(integrante4){
 var posBot3 = new pos(this.game.camera.x + this.game.camera.width /2 , this.game.camera.y + 550);
 boton3 = new HUD(this.game, posBot3, 'blackRectangle', target_vel);
 boton3.anchor.setTo(0.5,0.5);
-boton3.scale.setTo(0.7, 0.4);
+boton3.scale.setTo(1.2, 0.4);
 this.game.world.addChild(boton3);
+
+
 
 //var boton2 = this.game.add.sprite(this.game.camera.x + this.game.camera.width /2 , this.game.camera.y + 400, 'enemy_4');
 //boton2.anchor.setTo(0.5,0.5);
@@ -324,12 +326,52 @@ contador = 0;
 txt = this.game.add.text(boton3.x ,boton3.y, contador , {font: "20px Italic", fill:"#ffff", align: "center"});
 txt.anchor.setTo(0.5,0.5);
 
+var imagen  = this.game.add.sprite(this.game.camera.x + this.game.camera.width /2 ,  this.game.camera.y + this.game.camera.height /2, 'habilidades' );
+imagen.anchor.setTo(0, 0);
+imagen.scale.setTo(1.8, 1.8);
+imagen.x = boton3.x-boton3.width/2;
+imagen.y = boton3.y- boton3.height/2;
+imagen.frameName = 'bluespeed';
+
+
+var imagen2  = this.game.add.sprite(this.game.camera.x + this.game.camera.width /2 ,  this.game.camera.y + this.game.camera.height /2, 'habilidades' );
+imagen2.anchor.setTo(0, 0);
+imagen2.scale.setTo(1.8, 1.8);
+imagen2.x = boton3.x - boton3.width/2 + imagen.width;
+imagen2.y = boton3.y- boton3.height/2;
+imagen2.frameName = 'bluemissile';
+
+
+var imagen3  = this.game.add.sprite(this.game.camera.x + this.game.camera.width /2 ,  this.game.camera.y + this.game.camera.height /2, 'habilidades' );
+imagen3.anchor.setTo(0, 0);
+imagen3.scale.setTo(1.8, 1.8);
+imagen3.x = boton3.x-boton3.width/2+ 2* imagen.width;
+imagen3.y = boton3.y- boton3.height/2;
+imagen3.frameName = 'bluedouble';
+
+var imagen4  = this.game.add.sprite(this.game.camera.x + this.game.camera.width /2 ,  this.game.camera.y + this.game.camera.height /2, 'habilidades' );
+imagen4.anchor.setTo(0, 0);
+imagen4.scale.setTo(1.8, 1.8);
+imagen4.x = boton3.x-boton3.width/2+ 3*imagen.width;
+imagen4.y = boton3.y- boton3.height/2;
+imagen4.frameName = 'bluelaser';
+
+var imagen5  = this.game.add.sprite(this.game.camera.x + this.game.camera.width /2 ,  this.game.camera.y + this.game.camera.height /2, 'habilidades' );
+imagen5.anchor.setTo(0, 0);
+imagen5.scale.setTo(1.8, 1.8);
+imagen5.x = boton3.x-boton3.width/2 + 4* imagen.width;;
+imagen5.y = boton3.y- boton3.height/2;
+imagen5.frameName = 'blueoption';
+
+var imagen6  = this.game.add.sprite(this.game.camera.x + this.game.camera.width /2 ,  this.game.camera.y + this.game.camera.height /2, 'habilidades' );
+imagen6.anchor.setTo(0, 0);
+imagen6.scale.setTo(1.8, 1.8);
+imagen6.x = boton3.x-boton3.width/2 + 5 * imagen.width;;
+imagen6.y = boton3.y- boton3.height/2;
+imagen6.frameName = 'blueshield';
 
 spriteGroup = this.game.add.group();  
-spriteGroup.addMultiple([boton3, txt]);
-
-
-
+spriteGroup.addMultiple([boton3, txt, imagen, imagen2, imagen3, imagen4, imagen5, imagen6]);
   },
 
 
@@ -489,6 +531,10 @@ function canICreateMyself(posX){
 function isOnCamera(posX){
 if(posX < nuestraCamara.x + nuestraCamara.width + 20){ return true; }
 else return false;
+}
+
+function upgradesSprites(){
+
 }
 
 function spawnEnemy(enemy_x_array, enemy_pos_array, enemySpriteName, enemyVel,enemyLives, enemy_Type){ 

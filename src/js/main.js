@@ -47,6 +47,7 @@ var PreloaderScene = {
     this.game.load.image('ship', IMAGE_PATH + 'futurama.png'); 
     
     this.game.load.atlas('naves',  IMAGE_PATH + 'shipSheet.png',  IMAGE_PATH + 'spritesShip.json');
+    this.game.load.atlas('habilidades',  IMAGE_PATH + 'habilities.png',  IMAGE_PATH + 'habilitiesJSON.json');
     
     this.game.load.image('power_up', IMAGE_PATH + 'PowerUp_1.png')
 
