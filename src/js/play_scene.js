@@ -4,6 +4,12 @@ var akey;
 var nuestroJuego;
 var nuestraCamara;
 var creado = false;
+var boton2;
+var boton3;
+var txt;
+var spriteGroup;
+
+var contador;
 
 var upKey;
 var downKey;
@@ -99,6 +105,8 @@ var layer;
 var level;
 var colisiones;
 var back;
+
+var boton;
 
 var PlayScene = 
 {
@@ -231,6 +239,11 @@ var PlayScene =
 
     */
     //el target debería heredar de sprite, de la clase movable, y no directamente de sprite.
+    //boton = this.game.add.button(this.game.world.centerX, this.game.world.centerY + 50, 'blackRectangle', actionOnClick, this, 2,1,0);
+    //boton.anchor.setTo(0.5,0.5);
+    //boton.scale.setTo(1, 0.5);
+
+
 
     target = this.game.add.sprite(
     this.game.world.width, this.game.world.centerY);
@@ -295,17 +308,46 @@ enemy_4_TiledToPhaser.forEach(function(integrante4){
   arrayPosicionesEnemigos_4.push(enePos4);
   arrayX_Enemy_4.push(integrante4.x);
   //crea(nuestroJuego, arrayPosicionesEnemigos1[arrayPosicionesEnemigos1.length-1],'enemy_1',enemy_1Vel,enemy_1Lives);
-});    
-    
+});
+
+var posBot3 = new pos(this.game.camera.x + this.game.camera.width /2 , this.game.camera.y + 550);
+boton3 = new HUD(this.game, posBot3, 'blackRectangle', target_vel);
+boton3.anchor.setTo(0.5,0.5);
+boton3.scale.setTo(0.7, 0.4);
+this.game.world.addChild(boton3);
+
+//var boton2 = this.game.add.sprite(this.game.camera.x + this.game.camera.width /2 , this.game.camera.y + 400, 'enemy_4');
+//boton2.anchor.setTo(0.5,0.5);
+//boton2.scale.setTo(0.5, 0.5);
+contador = 0;
+
+txt = this.game.add.text(boton3.x ,boton3.y, contador , {font: "20px Italic", fill:"#ffff", align: "center"});
+txt.anchor.setTo(0.5,0.5);
+
+
+spriteGroup = this.game.add.group();  
+spriteGroup.addMultiple([boton3, txt]);
+
+
+
   },
 
 
   update: function ()
   {
     
-
-    if(target.x < this.game.world.width - this.game.camera.width)
+    
+    if(!(target.x < this.game.world.width - this.game.camera.width))
+    target_vel = 0;
     target.x +=target_vel;
+    contador+= 1;
+
+    spriteGroup.x = this.game.camera.x;;
+
+
+    txt.setText("Score : " + contador);
+    
+
 
     colisiones.debug = true;
     
@@ -596,12 +638,32 @@ Movable.prototype = Object.create(Phaser.Sprite.prototype);
 Movable.prototype.constructor = Movable;
 
 
+
+function HUD(game, position, sprite, velocity){
+  Movable.apply(this, [game, position, sprite, velocity]); 
+}
+HUD.prototype = Object.create(Movable.prototype);
+HUD.prototype.constructor = HUD;
+
+
+HUD.prototype.Movement = function(){
+}
+
+
+HUD.prototype.update = function(){
+  // habrá que crearlo y movel la posicion  
+this.Movement();
+
+} 
+
 //Objetos que se destruyen
 function Destroyable(game, position, sprite,velocity, lives)
 {
   Movable.apply(this, [game, position, sprite, velocity]); 
   this._lives = lives;
 }
+
+
 
 Destroyable.prototype = Object.create(Movable.prototype);
 Destroyable.prototype.constructor = Destroyable;

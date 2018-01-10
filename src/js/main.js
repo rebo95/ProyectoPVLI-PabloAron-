@@ -46,7 +46,7 @@ var PreloaderScene = {
     // TODO: load here the assets for the game
     this.game.load.image('ship', IMAGE_PATH + 'futurama.png'); 
     
-    this.game.load.atlas('naves',  IMAGE_PATH + 'naveSprite.png',  IMAGE_PATH + 'naveJson.json');
+    this.game.load.atlas('naves',  IMAGE_PATH + 'shipSheet.png',  IMAGE_PATH + 'spritesShip.json');
     
     this.game.load.image('power_up', IMAGE_PATH + 'PowerUp_1.png')
 
@@ -55,7 +55,9 @@ var PreloaderScene = {
     this.game.load.image('enemy_2', IMAGE_PATH + 'n.png');
     this.game.load.image('enemy_3', IMAGE_PATH + 'futurama.png');
     this.game.load.image('enemy_4', IMAGE_PATH + 'Power_Up.png');
+    this.game.load.image('hud', IMAGE_PATH + 'hudShip.jpg');
     
+    //hudShip
     //Cargas de las balas
     this.game.load.image('bullet_1', IMAGE_PATH + 'bullet1.png');
     this.game.load.image('laser', IMAGE_PATH + 'laser.png');
