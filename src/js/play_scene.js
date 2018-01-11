@@ -53,6 +53,15 @@ var shield_resistance = 6;
 var weapons = [];
 var currentWeapon = 0;
 
+
+var shieldSprite;
+var optionSprite; 
+var laserSprite;
+var doubleSprite;
+var missileSprite;  
+var speedSprite;
+
+
 //PowerUps
 var upgrades = [];
 var currentUpgrade = 2;
@@ -326,53 +335,54 @@ contador = 0;
 txt = this.game.add.text(boton3.x ,boton3.y, contador , {font: "20px Italic", fill:"#ffff", align: "center"});
 txt.anchor.setTo(0.5,0.5);
 
-var imagen  = this.game.add.sprite(this.game.camera.x + this.game.camera.width /2 ,  this.game.camera.y + this.game.camera.height /2, 'habilidades' );
-imagen.anchor.setTo(0, 0);
-imagen.scale.setTo(1.8, 1.8);
-imagen.x = boton3.x-boton3.width/2;
-imagen.y = boton3.y- boton3.height/2;
-imagen.frameName = 'bluespeed';
+speedSprite  = this.game.add.sprite(this.game.camera.x + this.game.camera.width /2 ,  this.game.camera.y + this.game.camera.height /2, 'habilidades' );
+speedSprite.anchor.setTo(0, 0);
+speedSprite.scale.setTo(1.8, 1.8);
+speedSprite.x = boton3.x-boton3.width/2;
+speedSprite.y = boton3.y- boton3.height/2;
+speedSprite.frameName = 'bluespeed';
 
 
-var imagen2  = this.game.add.sprite(this.game.camera.x + this.game.camera.width /2 ,  this.game.camera.y + this.game.camera.height /2, 'habilidades' );
-imagen2.anchor.setTo(0, 0);
-imagen2.scale.setTo(1.8, 1.8);
-imagen2.x = boton3.x - boton3.width/2 + imagen.width;
-imagen2.y = boton3.y- boton3.height/2;
-imagen2.frameName = 'bluemissile';
+missileSprite  = this.game.add.sprite(this.game.camera.x + this.game.camera.width /2 ,  this.game.camera.y + this.game.camera.height /2, 'habilidades' );
+missileSprite.anchor.setTo(0, 0);
+missileSprite.scale.setTo(1.8, 1.8);
+missileSprite.x = boton3.x - boton3.width/2 + speedSprite.width;
+missileSprite.y = boton3.y- boton3.height/2;
+missileSprite.frameName = 'bluemissile';
 
 
-var imagen3  = this.game.add.sprite(this.game.camera.x + this.game.camera.width /2 ,  this.game.camera.y + this.game.camera.height /2, 'habilidades' );
-imagen3.anchor.setTo(0, 0);
-imagen3.scale.setTo(1.8, 1.8);
-imagen3.x = boton3.x-boton3.width/2+ 2* imagen.width;
-imagen3.y = boton3.y- boton3.height/2;
-imagen3.frameName = 'bluedouble';
+doubleSprite  = this.game.add.sprite(this.game.camera.x + this.game.camera.width /2 ,  this.game.camera.y + this.game.camera.height /2, 'habilidades' );
+doubleSprite.anchor.setTo(0, 0);
+doubleSprite.scale.setTo(1.8, 1.8);
+doubleSprite.x = boton3.x-boton3.width/2+ 2* speedSprite.width;
+doubleSprite.y = boton3.y- boton3.height/2;
+doubleSprite.frameName = 'bluedouble';
 
-var imagen4  = this.game.add.sprite(this.game.camera.x + this.game.camera.width /2 ,  this.game.camera.y + this.game.camera.height /2, 'habilidades' );
-imagen4.anchor.setTo(0, 0);
-imagen4.scale.setTo(1.8, 1.8);
-imagen4.x = boton3.x-boton3.width/2+ 3*imagen.width;
-imagen4.y = boton3.y- boton3.height/2;
-imagen4.frameName = 'bluelaser';
+laserSprite  = this.game.add.sprite(this.game.camera.x + this.game.camera.width /2 ,  this.game.camera.y + this.game.camera.height /2, 'habilidades' );
+laserSprite.anchor.setTo(0, 0);
+laserSprite.scale.setTo(1.8, 1.8);
+laserSprite.x = boton3.x-boton3.width/2+ 3*speedSprite.width;
+laserSprite.y = boton3.y- boton3.height/2;
+laserSprite.frameName = 'bluelaser';
 
-var imagen5  = this.game.add.sprite(this.game.camera.x + this.game.camera.width /2 ,  this.game.camera.y + this.game.camera.height /2, 'habilidades' );
-imagen5.anchor.setTo(0, 0);
-imagen5.scale.setTo(1.8, 1.8);
-imagen5.x = boton3.x-boton3.width/2 + 4* imagen.width;;
-imagen5.y = boton3.y- boton3.height/2;
-imagen5.frameName = 'blueoption';
+optionSprite  = this.game.add.sprite(this.game.camera.x + this.game.camera.width /2 ,  this.game.camera.y + this.game.camera.height /2, 'habilidades' );
+optionSprite.anchor.setTo(0, 0);
+optionSprite.scale.setTo(1.8, 1.8);
+optionSprite.x = boton3.x-boton3.width/2 + 4* speedSprite.width;;
+optionSprite.y = boton3.y- boton3.height/2;
+optionSprite.frameName = 'blueoption';
 
-var imagen6  = this.game.add.sprite(this.game.camera.x + this.game.camera.width /2 ,  this.game.camera.y + this.game.camera.height /2, 'habilidades' );
-imagen6.anchor.setTo(0, 0);
-imagen6.scale.setTo(1.8, 1.8);
-imagen6.x = boton3.x-boton3.width/2 + 5 * imagen.width;;
-imagen6.y = boton3.y- boton3.height/2;
-imagen6.frameName = 'blueshield';
+shieldSprite  = this.game.add.sprite(this.game.camera.x + this.game.camera.width /2 ,  this.game.camera.y + this.game.camera.height /2, 'habilidades' );
+shieldSprite.anchor.setTo(0, 0);
+shieldSprite.scale.setTo(1.8, 1.8);
+shieldSprite.x = boton3.x-boton3.width/2 + 5 * speedSprite.width;;
+shieldSprite.y = boton3.y- boton3.height/2;
+shieldSprite.frameName = 'blueshield';
 
 spriteGroup = this.game.add.group();  
-spriteGroup.addMultiple([boton3, txt, imagen, imagen2, imagen3, imagen4, imagen5, imagen6]);
+spriteGroup.addMultiple([boton3, txt, speedSprite, missileSprite, doubleSprite, laserSprite, optionSprite, shieldSprite]);
   },
+
 
 
   update: function ()
@@ -399,6 +409,8 @@ spriteGroup.addMultiple([boton3, txt, imagen, imagen2, imagen3, imagen4, imagen5
     spawnEnemy(arrayX_Enemy_2, arrayPosicionesEnemigos_2, 'enemy_2', enemy_2Vel, enemy_2Lives, 2);
     spawnEnemy(arrayX_Enemy_3, arrayPosicionesEnemigos_3, 'enemy_3', enemy_3Vel, enemy_3Lives, 3);
     spawnEnemy(arrayX_Enemy_4, arrayPosicionesEnemigos_4, 'enemy_4', enemy_4Vel, enemy_4Lives, 4);
+
+    upgradesSprites();
 
     /*
     for(var j = 0; j<arrayPosicionesEnemigos_1.length; j++ ){
@@ -533,8 +545,24 @@ if(posX < nuestraCamara.x + nuestraCamara.width + 20){ return true; }
 else return false;
 }
 
-function upgradesSprites(){
 
+function upgradesSprites(){
+if(currentUpgrade === 0){
+  shieldSprite.frameName = 'blueshield';
+  optionSprite.frameName = 'blueoption';
+  laserSprite.frameName = 'bluelaser';
+  doubleSprite.frameName = 'bluedouble';
+  missileSprite.frameName = 'bluemissile';
+  speedSprite.frameName = 'bluespeed';
+}
+else if (currentUpgrade === 1){
+  speedSprite.frameName = 'orangespeed'
+}
+else if (currentUpgrade === 2){ missileSprite.frameName = 'orangemissile'}
+else if (currentUpgrade === 3){ doubleSprite.frameName = 'orangedouble'}
+else if (currentUpgrade === 4){ laserSprite.frameName = 'orangelaser'}
+else if (currentUpgrade === 5){ optionSprite.frameName = 'orangeoption'}
+else if (currentUpgrade === 6){ shieldSprite.frameName = 'orangeshield'}
 }
 
 function spawnEnemy(enemy_x_array, enemy_pos_array, enemySpriteName, enemyVel,enemyLives, enemy_Type){ 
@@ -854,6 +882,11 @@ Bullet.prototype.fire = function (x, y, angle, speed, gx, gy)
   this.body.gravity.set(gx, gy);
   
 };
+
+Bullet.prototype.update = function(){
+if(this.body.x > this.game.camera.x + this.game.camera.width || this.body.y > this.game.camera.height + this.game.camera.y || this.body.y < this.game.camera.y)
+this.kill();  
+}
 
 var Weapon = {};
 

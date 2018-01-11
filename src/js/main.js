@@ -33,6 +33,11 @@ var PreloaderScene = {
     //Menu assets
     this.game.load.image('titlescreen', IMAGE_PATH + 'Gradius.jpg');
     this.game.load.image('blackRectangle', IMAGE_PATH + 'blackR.png');
+    this.game.load.image('title1', IMAGE_PATH + 'title.png');
+    this.game.load.image('title2', IMAGE_PATH + 'title2.png');
+    this.game.load.image('fondo', IMAGE_PATH + 'original.png');
+    this.game.load.image('logo', IMAGE_PATH + 'logo.png');
+    this.game.load.image('ourlogo', IMAGE_PATH + 'logoBack.png');
     
     //sound assets
     //music
@@ -48,7 +53,10 @@ var PreloaderScene = {
     
     this.game.load.atlas('naves',  IMAGE_PATH + 'shipSheet.png',  IMAGE_PATH + 'spritesShip.json');
     this.game.load.atlas('habilidades',  IMAGE_PATH + 'habilities.png',  IMAGE_PATH + 'habilitiesJSON.json');
-    
+    this.game.load.atlas('playSprite',  IMAGE_PATH + 'playSheet.png',  IMAGE_PATH + 'playJSON.json');
+    this.game.load.atlas('controlsSprite',  IMAGE_PATH + 'controlssheet.png',  IMAGE_PATH + 'controlsJSON.json');
+    this.game.load.atlas('creditsSprite',  IMAGE_PATH + 'creditssheet.png',  IMAGE_PATH + 'creditsJSON.json');
+
     this.game.load.image('power_up', IMAGE_PATH + 'PowerUp_1.png')
 
     //Cargas de los enemigos
@@ -56,7 +64,6 @@ var PreloaderScene = {
     this.game.load.image('enemy_2', IMAGE_PATH + 'n.png');
     this.game.load.image('enemy_3', IMAGE_PATH + 'futurama.png');
     this.game.load.image('enemy_4', IMAGE_PATH + 'Power_Up.png');
-    this.game.load.image('hud', IMAGE_PATH + 'hudShip.jpg');
     
     //hudShip
     //Cargas de las balas
