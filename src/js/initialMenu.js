@@ -21,6 +21,7 @@ var shootSound;
 var music;
 var txt;
 var nave;
+
 var MainMenu = {
     create : function(){
 
@@ -58,7 +59,7 @@ function start(){
     
     var logo = this.game.add.sprite(this.game.world.centerX, 500, 'logo');
     logo.anchor.setTo(0.5,0.5);
-    logo.scale.setTo(0.15, 0.15);
+    logo.scale.setTo(0.10, 0.10);
 
     var ourlogo = this.game.add.sprite(this.game.world.centerX, 110, 'ourlogo');
     ourlogo.anchor.setTo(0.5,0.5);
@@ -77,7 +78,7 @@ function start(){
     playSprite.anchor.setTo(0.5,0.5);
 
 
-    controlsBoton = this.game.add.button(this.game.world.centerX, this.game.world.centerY + 30, 'blackRectangle', actionOnClickPlay, this, 2,1,0);
+    controlsBoton = this.game.add.button(this.game.world.centerX, this.game.world.centerY + 30, 'blackRectangle', actionOnClickControls, this, 2,1,0);
     controlsBoton.anchor.setTo(0.5,0.5);
     controlsBoton.scale.setTo(1, 0.4);
 
@@ -87,7 +88,7 @@ function start(){
 
 
 
-    creditsBoton = this.game.add.button(this.game.world.centerX, this.game.world.centerY + 100, 'blackRectangle', actionOnClickPlay, this, 2,1,0);
+    creditsBoton = this.game.add.button(this.game.world.centerX, this.game.world.centerY + 100, 'blackRectangle',actionOnClickCredits, this, 2,1,0);
     creditsBoton.anchor.setTo(0.5,0.5);
     creditsBoton.scale.setTo(0.9, 0.4);
 
@@ -117,21 +118,24 @@ function start(){
 function actionOnClickPlay()
 {
     music.destroy();
-    this.game.cache.removeSound('menuMusic');
+
     this.game.state.start('play');
 }
+
 function actionOnClickControls()
 {
     music.destroy();
-    this.game.cache.removeSound('menuMusic');
-    this.game.state.start('controls');
+ 
+    this.game.state.start('controls2');
 }
+
 function actionOnClickCredits()
 {
     music.destroy();
-    this.game.cache.removeSound('menuMusic');
-    this.game.state.start('credits');
+    
+    this.game.state.start('credits2');
 }
+
 
 
 function playover(){
@@ -158,13 +162,13 @@ function controlout(){
 
 function creditsover(){
     //txt.fill = '#ff00ff';
-    creditsSprite .frameName = "redcredits";
+    creditsSprite.frameName = "redcredits";
     shootSound.play();
 
 }
 function creditsout(){
     //txt.fill = '#ffff';
-    creditsSprite .frameName = "bluecredits";
+    creditsSprite.frameName = "bluecredits";
 }
 
 

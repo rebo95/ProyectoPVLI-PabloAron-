@@ -1,7 +1,11 @@
 'use strict';
 
 var PlayScene = require('./play_scene.js');
-var MainMenu = require ('./initialMenu.js') 
+var Controls = require('./controls.js');
+var Credits2 = require('./credits.js');
+var MainMenu = require('./initialMenu.js');
+
+
 var IMAGE_PATH = 'images/';
 
 var BootScene = {
@@ -31,8 +35,11 @@ var PreloaderScene = {
 
 
     //Menu assets
-    this.game.load.image('titlescreen', IMAGE_PATH + 'Gradius.jpg');
+
     this.game.load.image('blackRectangle', IMAGE_PATH + 'blackR.png');
+    this.game.load.image('producido', IMAGE_PATH + 'producido.png');
+    this.game.load.image('aaron', IMAGE_PATH + 'producidoaaron.png');
+    this.game.load.image('pablo', IMAGE_PATH + 'producidopablo.png');
     this.game.load.image('title1', IMAGE_PATH + 'title.png');
     this.game.load.image('title2', IMAGE_PATH + 'title2.png');
     this.game.load.image('fondo', IMAGE_PATH + 'original.png');
@@ -56,14 +63,20 @@ var PreloaderScene = {
     this.game.load.atlas('playSprite',  IMAGE_PATH + 'playSheet.png',  IMAGE_PATH + 'playJSON.json');
     this.game.load.atlas('controlsSprite',  IMAGE_PATH + 'controlssheet.png',  IMAGE_PATH + 'controlsJSON.json');
     this.game.load.atlas('creditsSprite',  IMAGE_PATH + 'creditssheet.png',  IMAGE_PATH + 'creditsJSON.json');
+    this.game.load.atlas('menuSprite',  IMAGE_PATH + 'menusheet.png',  IMAGE_PATH + 'menuJSON.json');
+
+    this.game.load.atlas('enemy_1',  IMAGE_PATH + 'enemy1sheet.png',  IMAGE_PATH + 'enemy1JSON.json');
+    this.game.load.atlas('enemy_2',  IMAGE_PATH + 'enemy2sheet.png',  IMAGE_PATH + 'enemy2JSON.json');
+    this.game.load.atlas('enemy_3',  IMAGE_PATH + 'enemy3sheet.png',  IMAGE_PATH + 'enemy3JSON.json');
+    this.game.load.atlas('enemy_4',  IMAGE_PATH + 'enemy4sheet.png',  IMAGE_PATH + 'enemy4JSON.json');
 
     this.game.load.image('power_up', IMAGE_PATH + 'PowerUp_1.png')
 
     //Cargas de los enemigos
-    this.game.load.image('enemy_1', IMAGE_PATH + 'meteorite.png');
-    this.game.load.image('enemy_2', IMAGE_PATH + 'n.png');
-    this.game.load.image('enemy_3', IMAGE_PATH + 'futurama.png');
-    this.game.load.image('enemy_4', IMAGE_PATH + 'Power_Up.png');
+    //this.game.load.image('enemy_1', IMAGE_PATH + 'meteorite.png');
+    //this.game.load.image('enemy_2', IMAGE_PATH + 'n.png');
+    //this.game.load.image('enemy_3', IMAGE_PATH + 'futurama.png');
+    //this.game.load.image('enemy_4', IMAGE_PATH + 'Power_Up.png');
     
     //hudShip
     //Cargas de las balas
@@ -88,8 +101,11 @@ window.onload = function () {
 
   game.state.add('boot', BootScene);
   game.state.add('preloader', PreloaderScene);
+  game.state.add('credits2', Credits2);
   game.state.add('menu', MainMenu);
-  game.state.add('play', PlayScene);
+  game.state.add('controls2', Controls);  
 
+
+  game.state.add('play', PlayScene);
   game.state.start('boot');
 };

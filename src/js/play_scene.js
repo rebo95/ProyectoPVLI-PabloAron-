@@ -381,6 +381,9 @@ shieldSprite.frameName = 'blueshield';
 
 spriteGroup = this.game.add.group();  
 spriteGroup.addMultiple([boton3, txt, speedSprite, missileSprite, doubleSprite, laserSprite, optionSprite, shieldSprite]);
+
+
+
   },
 
 
@@ -618,7 +621,12 @@ function movimiento(objeto, velocidad){
 function createEnemy_1(juego, posicion, spriteName, velocidad, vidas, nombre){
   var ene = new Enemy_1(juego, posicion, spriteName, velocidad, vidas);
   ene.anchor.setTo(0.5, 0.5);
-  ene.scale.setTo(0.5, 0.5);
+  ene.scale.setTo(2, 2);
+
+  ene.animations.add('oscilate', Phaser.Animation.generateFrameNames('Enemy_1_', 1, 3), 5, true);
+  //ene.animations.add('swim', 'Enemy_1_1', 'Enemy_1_3');
+  ene.animations.play('oscilate', 8 ,true);
+
   juego.physics.arcade.enable(ene);
   juego.world.addChild(ene);
   enemyArray.push(ene);
@@ -628,7 +636,7 @@ function createEnemy_1(juego, posicion, spriteName, velocidad, vidas, nombre){
 function createEnemy_2(juego, posicion, spriteName, velocidad, vidas, nombre){
   var ene2 = new Enemy_2(juego, posicion, spriteName, velocidad, vidas);
   ene2.anchor.setTo(0.5, 0.5);
-  ene2.scale.setTo(0.1, 0.1);
+  ene2.scale.setTo(2, 2);
   juego.physics.arcade.enable(ene2);
   juego.world.addChild(ene2);
   enemyArray.push(ene2);
@@ -638,7 +646,7 @@ function createEnemy_2(juego, posicion, spriteName, velocidad, vidas, nombre){
 function createEnemy_3(juego, posicion, spriteName, velocidad, vidas, nombre){
   var ene3 = new Enemy_3(juego, posicion, spriteName, velocidad, vidas);
   ene3.anchor.setTo(0.5, 0.5);
-  ene3.scale.setTo(0.3, 0.3);
+  ene3.scale.setTo(2, 2);
   juego.physics.arcade.enable(ene3);
   juego.world.addChild(ene3);
   enemyArray.push(ene3);
@@ -648,7 +656,7 @@ function createEnemy_3(juego, posicion, spriteName, velocidad, vidas, nombre){
 function createEnemy_4(juego, posicion, spriteName, velocidad, vidas, nombre){
   var ene4 = new Enemy_4(juego, posicion, spriteName, velocidad, vidas);
   ene4.anchor.setTo(0.5, 0.5);
-  ene4.scale.setTo(0.5, 0.5);
+  ene4.scale.setTo(2, 2);
   juego.physics.arcade.enable(ene4);
   juego.world.addChild(ene4);
   enemyArray.push(ene4);
@@ -1106,6 +1114,7 @@ function Enemy_Aaron(game, position, sprite, velocity, lives){
 function Enemy_1(game, position, sprite, velocity, lives)
 {
   Enemy.apply(this, [game, position, sprite, velocity, lives]);
+  
 }
 
 Enemy_1.prototype = Object.create(Enemy.prototype);
@@ -1155,11 +1164,18 @@ Enemy_2.prototype.Movement = function(vel)
 
   if(this.y > player.y)
   {
+    this.frameName = "Enemy_2_3";
     this.y--;
+    
   }
   else if(this.y < player.y)
   {
+    this.frameName = "Enemy_2_1";
     this.y++;
+
+  }
+  else{
+    this.frameName = "Enemy_2_2";
   }
   
 }
