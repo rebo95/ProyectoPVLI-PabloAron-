@@ -23,16 +23,19 @@ var arrayPosicionesEnemigos_1 = [];
 var arrayPosicionesEnemigos_2 = [];
 var arrayPosicionesEnemigos_3 = [];
 var arrayPosicionesEnemigos_4 = [];
+var arrayPosicionesEnemigos_5 = [];
 
 var arrayX_Enemy_1 = [];
 var arrayX_Enemy_2 = [];
 var arrayX_Enemy_3 = [];
 var arrayX_Enemy_4 = [];
+var arrayX_Enemy_5 = [];
 
 var enemy_1_TiledToPhaser; 
 var enemy_2_TiledToPhaser; 
 var enemy_3_TiledToPhaser; 
 var enemy_4_TiledToPhaser; 
+var enemy_5_TiledToPhaser; 
 
 
 var naveEspacial;
@@ -45,7 +48,7 @@ var playerArray = [];
 
 //Player
 var player;
-var playerVel = 3;
+var playerVel = 5;
 var playerLives = 3;
 var shield = false;
 var shield_resistance = 6;
@@ -99,7 +102,7 @@ var enemy_4Lives = 1;
 
 //Balas
 var bullets_1;
-var bullets_1Vel = 3;
+var bullets_1Vel = 7;
 var bullets_1Lives = 1;
 
 var shootTime = 0;
@@ -135,7 +138,8 @@ var PlayScene =
     
     colisiones = map.createLayer('collisions');
 
-    map.setCollisionByExclusion([0], true, colisiones);
+    map.setCollisionBetween(1, 1000, true, 'collisions');
+    //map.setCollisionByExclusion([0], true, colisiones);
 
     //map.setCollision(708, true, level);
 
@@ -260,7 +264,7 @@ var PlayScene =
     target.scale.setTo(0.25, 0.25);
     target.x = 0;
 
-    colisiones.resizeWorld();
+    
 
   //player
   naveEspacial = this.game.add.physicsGroup();
@@ -318,6 +322,17 @@ enemy_4_TiledToPhaser.forEach(function(integrante4){
   arrayX_Enemy_4.push(integrante4.x);
   //crea(nuestroJuego, arrayPosicionesEnemigos1[arrayPosicionesEnemigos1.length-1],'enemy_1',enemy_1Vel,enemy_1Lives);
 });
+
+enemy_5_TiledToPhaser = this.game.add.physicsGroup();
+map.createFromObjects('objetos', 'obstacle', '', 980, true, false, enemy_5_TiledToPhaser);// asÃ­ funciona igual , para la nave no nos hace falta poner el grupo
+enemy_5_TiledToPhaser.forEach(function(integrante5){
+  // nos da la poiscion de cada uno de los integrante
+  var enePos5 = new pos(integrante5.x, integrante5.y);
+  arrayPosicionesEnemigos_5.push(enePos5);
+  arrayX_Enemy_5.push(integrante5.x);
+  //crea(nuestroJuego, arrayPosicionesEnemigos1[arrayPosicionesEnemigos1.length-1],'enemy_1',enemy_1Vel,enemy_1Lives);
+});
+
 
 var posBot3 = new pos(this.game.camera.x + this.game.camera.width /2 , this.game.camera.y + 550);
 boton3 = new HUD(this.game, posBot3, 'blackRectangle', target_vel);
@@ -383,7 +398,7 @@ spriteGroup = this.game.add.group();
 spriteGroup.addMultiple([boton3, txt, speedSprite, missileSprite, doubleSprite, laserSprite, optionSprite, shieldSprite]);
 
 
-
+colisiones.resizeWorld();
   },
 
 
@@ -405,13 +420,13 @@ spriteGroup.addMultiple([boton3, txt, speedSprite, missileSprite, doubleSprite, 
 
 
     colisiones.debug = true;
-    
-    this.game.physics.arcade.collide(player, this.colisiones);
+
 
     spawnEnemy(arrayX_Enemy_1, arrayPosicionesEnemigos_1, 'enemy_1', enemy_1Vel, enemy_1Lives, 1);
     spawnEnemy(arrayX_Enemy_2, arrayPosicionesEnemigos_2, 'enemy_2', enemy_2Vel, enemy_2Lives, 2);
     spawnEnemy(arrayX_Enemy_3, arrayPosicionesEnemigos_3, 'enemy_3', enemy_3Vel, enemy_3Lives, 3);
     spawnEnemy(arrayX_Enemy_4, arrayPosicionesEnemigos_4, 'enemy_4', enemy_4Vel, enemy_4Lives, 4);
+    spawnEnemy(arrayX_Enemy_5, arrayPosicionesEnemigos_5, 'roca', 0, 0, 5);
 
     upgradesSprites();
 
@@ -446,24 +461,35 @@ spriteGroup.addMultiple([boton3, txt, speedSprite, missileSprite, doubleSprite, 
 
     for(var i = 0; i<enemyArray.length; i++ ){
         this.game.physics.arcade.overlap(weapons[currentWeapon], enemyArray[i], collisionHandler, null, this);
-        this.game.physics.arcade.overlap(player, enemyArray[i], collisionHandler, null, this);
+        //this.game.physics.arcade.overlap(player, enemyArray[i], collisionHandler, null, this);
     }
 
 
-    this.game.physics.arcade.overlap(weapons[currentWeapon], enemy_1, collisionHandler, null, this);
-    this.game.physics.arcade.overlap(weapons[currentWeapon], enemy_2, collisionHandler, null, this);
-    this.game.physics.arcade.overlap(weapons[currentWeapon], enemy_3, collisionHandler, null, this);
-    this.game.physics.arcade.overlap(weapons[currentWeapon], enemy_4, collisionHandler, null, this);
+    //this.game.physics.arcade.overlap(weapons[currentWeapon], enemy_1, collisionHandler, null, this);
+    //this.game.physics.arcade.overlap(weapons[currentWeapon], enemy_2, collisionHandler, null, this);
+    //this.game.physics.arcade.overlap(weapons[currentWeapon], enemy_3, collisionHandler, null, this);
+    //this.game.physics.arcade.overlap(weapons[currentWeapon], enemy_4, collisionHandler, null, this);
+    this.collisionDetected = false;
+    this.currentEnemy = 0;
 
-    if(this.game.physics.arcade.overlap(player, enemy_1) || this.game.physics.arcade.overlap(player, enemy_2) ||
-    this.game.physics.arcade.overlap(player, enemy_3) || this.game.physics.arcade.overlap(player, enemy_4))
+
+    while(!this.collisionDetected && this.currentEnemy < enemyArray.length){
+      if(this.game.physics.arcade.overlap(player, enemyArray[this.currentEnemy])){
+        this.collisionDetected = true;
+        console.log("ha colisionado");
+      }
+      this.currentEnemy ++;
+    }
+
+    if(this.collisionDetected)
     {
       if(shield)
       {
-        this.game.physics.arcade.overlap(enemy_1, player, collisionHandler2, null, this);
-        this.game.physics.arcade.overlap(enemy_2, player, collisionHandler2, null, this);
-        this.game.physics.arcade.overlap(enemy_3, player, collisionHandler2, null, this);
-        this.game.physics.arcade.overlap(enemy_4, player, collisionHandler2, null, this);
+        for(var i = 0; i<enemyArray.length; i++ ){
+          this.game.physics.arcade.overlap(weapons[currentWeapon], enemyArray[i], collisionHandler, null, this);
+          this.game.physics.arcade.overlap(player, enemyArray[i], collisionHandler, null, this);
+      }
+  
         shield_resistance--;
         if(shield_resistance <= 0)
         {
@@ -474,10 +500,16 @@ spriteGroup.addMultiple([boton3, txt, speedSprite, missileSprite, doubleSprite, 
       }
       else
       {
-        this.game.physics.arcade.overlap(player, enemy_1, collisionHandler, null, this);
-        this.game.physics.arcade.overlap(player, enemy_2, collisionHandler, null, this);
-        this.game.physics.arcade.overlap(player, enemy_3, collisionHandler, null, this);
-        this.game.physics.arcade.overlap(player, enemy_4, collisionHandler, null, this);
+
+        for(var i = 0; i<enemyArray.length; i++ ){
+          this.game.physics.arcade.overlap(weapons[currentWeapon], enemyArray[i], collisionHandler, null, this);
+          this.game.physics.arcade.overlap(player, enemyArray[i], collisionHandler, null, this);
+      }
+  
+        //this.game.physics.arcade.overlap(player, enemy_1, collisionHandler, null, this);
+        //this.game.physics.arcade.overlap(player, enemy_2, collisionHandler, null, this);
+        //this.game.physics.arcade.overlap(player, enemy_3, collisionHandler, null, this);
+        //this.game.physics.arcade.overlap(player, enemy_4, collisionHandler, null, this);
       }
     }
 
@@ -517,8 +549,12 @@ function collisionHandler2(obj1, obj2){
 
 function collisionHandler(obj1, obj2)
 {
-  obj1.kill();
+
+if(obj1._velocity !== 0 )
+   obj1.kill();
+  //Enemy_5
   obj2.kill();
+  
   //explosion.play();
   if(obj1 === player)
   playerAlive = false;
@@ -580,6 +616,8 @@ function spawnEnemy(enemy_x_array, enemy_pos_array, enemySpriteName, enemyVel,en
       createEnemy_3(nuestroJuego, enemy_pos_array[j],enemySpriteName,enemyVel,enemyLives);
       else if(enemy_Type===4)
       createEnemy_4(nuestroJuego, enemy_pos_array[j],enemySpriteName,enemyVel,enemyLives);
+      else if(enemy_Type===5)
+      createEnemy_5(nuestroJuego, enemy_pos_array[j],enemySpriteName,enemyVel,enemyLives);
     }
   }
 
@@ -647,6 +685,11 @@ function createEnemy_3(juego, posicion, spriteName, velocidad, vidas, nombre){
   var ene3 = new Enemy_3(juego, posicion, spriteName, velocidad, vidas);
   ene3.anchor.setTo(0.5, 0.5);
   ene3.scale.setTo(2, 2);
+
+  ene3.animations.add('oscilate3', Phaser.Animation.generateFrameNames('Enemy_3_', 1, 4), 5, true);
+  //ene.animations.add('swim', 'Enemy_1_1', 'Enemy_1_3');
+  ene3.animations.play('oscilate3', 8 ,true);
+
   juego.physics.arcade.enable(ene3);
   juego.world.addChild(ene3);
   enemyArray.push(ene3);
@@ -657,9 +700,25 @@ function createEnemy_4(juego, posicion, spriteName, velocidad, vidas, nombre){
   var ene4 = new Enemy_4(juego, posicion, spriteName, velocidad, vidas);
   ene4.anchor.setTo(0.5, 0.5);
   ene4.scale.setTo(2, 2);
+
+  ene4.animations.add('oscilate4', Phaser.Animation.generateFrameNames('Enemy_4_', 1, 4), 5, true);
+  //ene.animations.add('swim', 'Enemy_1_1', 'Enemy_1_3');
+  ene4.animations.play('oscilate4', 8 ,true);
+
+
   juego.physics.arcade.enable(ene4);
   juego.world.addChild(ene4);
   enemyArray.push(ene4);
+
+}
+
+function createEnemy_5(juego, posicion, spriteName, velocidad, vidas, nombre){
+  var ene5 = new Enemy_5(juego, posicion, spriteName, velocidad, vidas);
+  ene5.anchor.setTo(0.5, 1);
+  ene5.scale.setTo(3, 3);
+  juego.physics.arcade.enable(ene5);
+  juego.world.addChild(ene5);
+  enemyArray.push(ene5);
 
 }
 
@@ -784,12 +843,12 @@ this.body.x += target_vel;
 
   if (upKey.isDown)
   {
-    this.body.y -= this._velocity * 0.5;
+    this.body.y -= this._velocity;
       player.frameName = 'down';
   }
   else if (downKey.isDown)
   {
-    this.body.y += this._velocity * 0.5;
+    this.body.y += this._velocity;
       player.frameName = 'up';
   }  else {
     player.frameName = 'front';
@@ -888,11 +947,12 @@ Bullet.prototype.fire = function (x, y, angle, speed, gx, gy)
    this.angle = angle;
   
   this.body.gravity.set(gx, gy);
+  shootSound.play();
   
 };
 
 Bullet.prototype.update = function(){
-if(this.body.x > this.game.camera.x + this.game.camera.width || this.body.y > this.game.camera.height + this.game.camera.y || this.body.y < this.game.camera.y)
+if(this.body.x > this.game.camera.x + this.game.camera.width || this.body.y > this.game.camera.y + this.game.camera.height || this.body.y < this.game.camera.y)
 this.kill();  
 }
 
@@ -905,7 +965,7 @@ Weapon.SingleBullet = function (game)
   Phaser.Group.call(this, game, game.world, 'Single Bullet', false, true, Phaser.Physics.ARCADE);
   
   this.nextFire = 0;
-  this.bulletSpeed = 350;
+  this.bulletSpeed = 500;
   this.fireRate = 60;
   
   for (var i = 0; i < 64; i++)
@@ -1288,5 +1348,15 @@ Enemy_4.prototype.update = function()
   if(isOnCamera(this.x))
   this.Movement();
 }
+
+
+function Enemy_5(game, position, sprite, velocity, lives)
+{
+  Enemy.apply(this, [game, position, sprite, velocity, lives]);
+}
+
+Enemy_5.prototype = Object.create(Enemy.prototype);
+Enemy_5.prototype.constructor = Enemy_5;
+
 
 module.exports = PlayScene;

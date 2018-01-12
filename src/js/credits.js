@@ -85,8 +85,8 @@ var Credits2 = {
 
     update: function(){
         //enemigo.x++;}
-        if(spriteGroup.y > -this.game.world.height){
-        spriteGroup.y -= 1; 
+        if(spriteGroup.y > -this.game.world.height/2 - 90){
+        spriteGroup.y -= 2; 
         }else {
             this.game.state.start('menu');
         }

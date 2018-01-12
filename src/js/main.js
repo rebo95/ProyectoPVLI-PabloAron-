@@ -70,6 +70,8 @@ var PreloaderScene = {
     this.game.load.atlas('enemy_3',  IMAGE_PATH + 'enemy3sheet.png',  IMAGE_PATH + 'enemy3JSON.json');
     this.game.load.atlas('enemy_4',  IMAGE_PATH + 'enemy4sheet.png',  IMAGE_PATH + 'enemy4JSON.json');
 
+    this.game.load.image('roca', IMAGE_PATH + 'Enemy_4_Respawn.png')
+
     this.game.load.image('power_up', IMAGE_PATH + 'PowerUp_1.png')
 
     //Cargas de los enemigos
