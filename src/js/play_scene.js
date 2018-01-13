@@ -9,7 +9,17 @@ var boton3;
 var txt;
 var spriteGroup;
 
-var contador;
+
+
+var points;
+var posXPlayerIni;
+var posYPlayerIni;
+var posXCameraIni;
+var posYCameraIni;
+
+
+
+
 
 var upKey;
 var downKey;
@@ -126,6 +136,8 @@ var PlayScene =
   {
     nuestroJuego = this.game;
     nuestraCamara = this.game.camera;
+    posXCameraIni = this.game.camera.x;
+    posYCameraIni = this.game.camera.y;
 
     this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
@@ -136,9 +148,9 @@ var PlayScene =
     back = map.createLayer('fondo');//son los nombres del tiled, como se llaman las capas del tiled creado
     level = map.createLayer('nivelado');
     
-    colisiones = map.createLayer('collisions');
+    //colisiones = map.createLayer('collisions');
 
-    map.setCollisionBetween(1, 1000, true, 'collisions');
+    //map.setCollisionBetween(1, 1000, true, 'collisions');
     //map.setCollisionByExclusion([0], true, colisiones);
 
     //map.setCollision(708, true, level);
@@ -271,14 +283,12 @@ var PlayScene =
   map.createFromObjects('objetos', 'nave', '', 683, true, false, naveEspacial);
   naveEspacial.forEach(function(integrante){
     // nos da la poiscion de cada uno de los integrantes
+    posXPlayerIni = integrante.x;
+    posYPlayerIni = integrante.y;
+
     var playerPos = new pos(integrante.x, integrante.y);
-    player = new Player(nuestroJuego, playerPos,'naves', playerVel, playerLives);
-    player.anchor.setTo(0.5, 0.5);
-    player.scale.setTo(3,3);
-    nuestroJuego.physics.arcade.enable(player);
-    nuestroJuego.world.addChild(player);
-    player.body.collideWorldBounds = true;
-    playerArray.push(player);
+    create_player(nuestroJuego, playerPos, 'naves', playerVel, playerLives);
+
 
 });    
 
@@ -334,10 +344,10 @@ enemy_5_TiledToPhaser.forEach(function(integrante5){
 });
 
 
-var posBot3 = new pos(this.game.camera.x + this.game.camera.width /2 , this.game.camera.y + 550);
+var posBot3 = new pos(this.game.camera.x + this.game.camera.width /2 , this.game.camera.y + 580);
 boton3 = new HUD(this.game, posBot3, 'blackRectangle', target_vel);
 boton3.anchor.setTo(0.5,0.5);
-boton3.scale.setTo(1.2, 0.4);
+boton3.scale.setTo(1.2, 0.3);
 this.game.world.addChild(boton3);
 
 
@@ -345,10 +355,10 @@ this.game.world.addChild(boton3);
 //var boton2 = this.game.add.sprite(this.game.camera.x + this.game.camera.width /2 , this.game.camera.y + 400, 'enemy_4');
 //boton2.anchor.setTo(0.5,0.5);
 //boton2.scale.setTo(0.5, 0.5);
-contador = 0;
+points = 0;
 
-txt = this.game.add.text(boton3.x ,boton3.y, contador , {font: "20px Italic", fill:"#ffff", align: "center"});
-txt.anchor.setTo(0.5,0.5);
+txt = this.game.add.text(boton3.x - boton3.width/2 ,boton3.y + 5, points , {font: "20px Italic", fill:"#ffff", align: "center"});
+txt.anchor.setTo(0,0.5);
 
 speedSprite  = this.game.add.sprite(this.game.camera.x + this.game.camera.width /2 ,  this.game.camera.y + this.game.camera.height /2, 'habilidades' );
 speedSprite.anchor.setTo(0, 0);
@@ -398,7 +408,7 @@ spriteGroup = this.game.add.group();
 spriteGroup.addMultiple([boton3, txt, speedSprite, missileSprite, doubleSprite, laserSprite, optionSprite, shieldSprite]);
 
 
-colisiones.resizeWorld();
+level.resizeWorld();
   },
 
 
@@ -410,16 +420,15 @@ colisiones.resizeWorld();
     if(!(target.x < this.game.world.width - this.game.camera.width))
     target_vel = 0;
     target.x +=target_vel;
-    contador+= 1;
 
     spriteGroup.x = this.game.camera.x;;
 
 
-    txt.setText("Score : " + contador);
+    txt.setText("  Score : " + points + "        Lifes : " + playerLives);
     
 
 
-    colisiones.debug = true;
+    //colisiones.debug = true;
 
 
     spawnEnemy(arrayX_Enemy_1, arrayPosicionesEnemigos_1, 'enemy_1', enemy_1Vel, enemy_1Lives, 1);
@@ -466,7 +475,7 @@ colisiones.resizeWorld();
 
 
     //this.game.physics.arcade.overlap(weapons[currentWeapon], enemy_1, collisionHandler, null, this);
-    //this.game.physics.arcade.overlap(weapons[currentWeapon], enemy_2, collisionHandler, null, this);
+    //this.game.physics.arcade.overlap(weapons[currentWeapon], enemy_2, collisionHandler, null, this);s
     //this.game.physics.arcade.overlap(weapons[currentWeapon], enemy_3, collisionHandler, null, this);
     //this.game.physics.arcade.overlap(weapons[currentWeapon], enemy_4, collisionHandler, null, this);
     this.collisionDetected = false;
@@ -550,32 +559,53 @@ function collisionHandler2(obj1, obj2){
 function collisionHandler(obj1, obj2)
 {
 
-if(obj1._velocity !== 0 )
+if(obj1._velocity !== 0 ){
    obj1.kill();
+   explode(obj1.x,obj1.y);
+   points+=50;
+}
+else {  explosion.play();
+  explode(obj2.x,obj2.y);
+}
   //Enemy_5
   obj2.kill();
   
   //explosion.play();
-  if(obj1 === player)
+  if(obj1 === player){
+
   playerAlive = false;
+  points -= 1000;
+  if (points<=0){
+    points = 0;
+
+    playerLives --;
+    playerArray.shift();
+
+    var playerPos = new pos(posXPlayerIni, posYPlayerIni);
+    create_player(this.game,playerPos, 'naves', playerVel, playerLives);
+    target.x = 0;
+  
+  }
+  }
   // nos permite cohibir el disparo en caso de que se destruya nuestra 
 
-  if(obj2 = Enemy){// para saber si un determinado elemento es de tipo alguno de los padres de la herencia se hace con el comparador "="
-    explode();
+ // if(obj2 = Enemy){// para saber si un determinado elemento es de tipo alguno de los padres de la herencia se hace con el comparador "="
+ //   explode();
 
     // este método nos gestiona las colisiones, aquí tendremos que lanzar los métodos pertinentas para el caso de que se produzcan estas colisiones
-  }
+//}
 }
 
 function start(){
   music.play();
+  music.loop = true;
   shootSound.onStop.add(soundStopped, this);
   explosion.onStop.add(soundStopped, this);
 
 }
 
 function canICreateMyself(posX){
-  if(posX < nuestraCamara.x + nuestraCamara.width + 1000){ return true; }
+  if(posX < nuestraCamara.x + nuestraCamara.width + 2000){ return true; }
   else return false;
 }
 
@@ -634,10 +664,17 @@ function soundStopped(sound){
 
 }
 
-function explode(){
+function explode(posExplosionx,posExplosiony){
   explosion.play();
-}
 
+var explode = nuestroJuego.add.sprite(posExplosionx,posExplosiony, 'enemy_2');
+explode.scale.setTo(2,2);
+explode.anchor.setTo(0.5,0.5);
+explode.killOnComplete = true;
+explode.animations.add('poom', Phaser.Animation.generateFrameNames('Enemies_Exp_', 1, 3), 5, true);
+explode.animations.play('poom', 8 ,false, true);
+
+}
 //CLASES Y ARQUITECTURA DE HERENCIA
 function pos(x, y)
 {
@@ -656,7 +693,7 @@ function movimiento(objeto, velocidad){
 
 //función que pawnea un enemigo
 
-function createEnemy_1(juego, posicion, spriteName, velocidad, vidas, nombre){
+function createEnemy_1(juego, posicion, spriteName, velocidad, vidas){
   var ene = new Enemy_1(juego, posicion, spriteName, velocidad, vidas);
   ene.anchor.setTo(0.5, 0.5);
   ene.scale.setTo(2, 2);
@@ -671,7 +708,20 @@ function createEnemy_1(juego, posicion, spriteName, velocidad, vidas, nombre){
 
 }
 
-function createEnemy_2(juego, posicion, spriteName, velocidad, vidas, nombre){
+
+function create_player(juego, posicion, spriteName, velocidad, vidas){
+
+  player = new Player(juego, posicion ,spriteName, velocidad, vidas);
+  player.anchor.setTo(0.5, 0.5);
+  player.scale.setTo(3,3);
+  juego.physics.arcade.enable(player);
+  juego.world.addChild(player);
+  player.body.collideWorldBounds = true;
+  playerArray.unshift(player);
+
+}
+
+function createEnemy_2(juego, posicion, spriteName, velocidad, vidas){
   var ene2 = new Enemy_2(juego, posicion, spriteName, velocidad, vidas);
   ene2.anchor.setTo(0.5, 0.5);
   ene2.scale.setTo(2, 2);
@@ -681,7 +731,7 @@ function createEnemy_2(juego, posicion, spriteName, velocidad, vidas, nombre){
 
 }
 
-function createEnemy_3(juego, posicion, spriteName, velocidad, vidas, nombre){
+function createEnemy_3(juego, posicion, spriteName, velocidad, vidas){
   var ene3 = new Enemy_3(juego, posicion, spriteName, velocidad, vidas);
   ene3.anchor.setTo(0.5, 0.5);
   ene3.scale.setTo(2, 2);
@@ -696,7 +746,7 @@ function createEnemy_3(juego, posicion, spriteName, velocidad, vidas, nombre){
 
 }
 
-function createEnemy_4(juego, posicion, spriteName, velocidad, vidas, nombre){
+function createEnemy_4(juego, posicion, spriteName, velocidad, vidas){
   var ene4 = new Enemy_4(juego, posicion, spriteName, velocidad, vidas);
   ene4.anchor.setTo(0.5, 0.5);
   ene4.scale.setTo(2, 2);
@@ -712,7 +762,7 @@ function createEnemy_4(juego, posicion, spriteName, velocidad, vidas, nombre){
 
 }
 
-function createEnemy_5(juego, posicion, spriteName, velocidad, vidas, nombre){
+function createEnemy_5(juego, posicion, spriteName, velocidad, vidas){
   var ene5 = new Enemy_5(juego, posicion, spriteName, velocidad, vidas);
   ene5.anchor.setTo(0.5, 1);
   ene5.scale.setTo(3, 3);
