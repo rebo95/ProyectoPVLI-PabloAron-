@@ -1,6 +1,7 @@
 'use strict';
 
 var akey;
+var pauseKey;
 var nuestroJuego;
 var nuestraCamara;
 var creado = false;
@@ -18,7 +19,7 @@ var posXCameraIni;
 var posYCameraIni;
 
 
-
+var creditsSprite ;
 
 
 var upKey;
@@ -59,7 +60,7 @@ var playerArray = [];
 //Player
 var player;
 var playerVel = 5;
-var playerLives = 3;
+var playerLives;
 var shield = false;
 var shield_resistance = 6;
 
@@ -134,6 +135,9 @@ var PlayScene =
 {
   create: function () 
   {
+
+    playerLives = 3;
+
     nuestroJuego = this.game;
     nuestraCamara = this.game.camera;
     posXCameraIni = this.game.camera.x;
@@ -155,7 +159,8 @@ var PlayScene =
 
     //map.setCollision(708, true, level);
 
-    akey = this.game.input.keyboard.addKey(Phaser.Keyboard.A);
+    akey = this.game.input.keyboard.addKey(Phaser.Keyboard.A);    
+    pauseKey = this.game.input.keyboard.addKey(Phaser.Keyboard.P);
 
     //Input
     upKey = this.game.input.keyboard.addKey(Phaser.Keyboard.UP);
@@ -165,6 +170,33 @@ var PlayScene =
     spacebarKey = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
     xKey = this.game.input.keyboard.addKey(Phaser.Keyboard.X);
 
+
+    window.onkeydown = function() {
+      this.pausaSprite;
+if(playerLives===0){
+  if (nuestroJuego.input.keyboard.event.keyCode == 82){ 
+    nuestroJuego.paused = false;
+    playerLives = 3;
+  nuestroJuego.state.start('play', true, false);
+  
+  }
+}else 
+      if (nuestroJuego.input.keyboard.event.keyCode == 80){
+        if(nuestroJuego.paused){
+          nuestroJuego.paused = false;
+          this.pausaSprite.destroy();
+        }
+        else {
+        nuestroJuego.paused = true;
+
+        this.pausaSprite = nuestroJuego.add.sprite(nuestroJuego.camera.x + nuestroJuego.camera.width/2, nuestroJuego.camera.y + nuestroJuego.camera.height/2, 'pausaSprite');
+        this.pausaSprite.anchor.setTo(0.5,0.5);
+        this.pausaSprite.scale.setTo(1,1);
+
+        }
+
+      }
+    }
     //sound effects
 
     music = this.game.add.audio('gameMusic');
@@ -344,7 +376,7 @@ enemy_5_TiledToPhaser.forEach(function(integrante5){
 });
 
 
-var posBot3 = new pos(this.game.camera.x + this.game.camera.width /2 , this.game.camera.y + 580);
+var posBot3 = new pos(this.game.camera.x + this.game.camera.width /2 , 50);
 boton3 = new HUD(this.game, posBot3, 'blackRectangle', target_vel);
 boton3.anchor.setTo(0.5,0.5);
 boton3.scale.setTo(1.2, 0.3);
@@ -408,15 +440,25 @@ spriteGroup = this.game.add.group();
 spriteGroup.addMultiple([boton3, txt, speedSprite, missileSprite, doubleSprite, laserSprite, optionSprite, shieldSprite]);
 
 
+
 level.resizeWorld();
+
+
+
   },
 
 
 
   update: function ()
   {
-    
-    
+    gameOver();
+    if(akey.isDown)
+    {
+      //this.game.state.start('menu',true , false);
+      //music.destroy();
+      //this.game.paused = true;
+
+    }
     if(!(target.x < this.game.world.width - this.game.camera.width))
     target_vel = 0;
     target.x +=target_vel;
@@ -601,6 +643,8 @@ function start(){
   music.loop = true;
   shootSound.onStop.add(soundStopped, this);
   explosion.onStop.add(soundStopped, this);
+
+
 
 }
 
@@ -816,6 +860,17 @@ function upgradesHandler(n)
 
 }
 
+function gameOver(){
+if(playerLives === 0){
+  var creditsSprite = nuestroJuego.add.sprite( nuestroJuego.camera.x + nuestroJuego.camera.width/2, nuestroJuego.camera.y + nuestroJuego.camera.height/2, 'ended');
+  creditsSprite.anchor.setTo(0.5,0.5);
+  creditsSprite.scale.setTo(0.7,0.7);
+  music.destroy();
+  nuestroJuego.paused = true;
+}
+
+
+}
 
 
 //Objetos móviles
@@ -907,6 +962,7 @@ this.body.x += target_vel;
   if(spacebarKey.isDown)
   {
     weapons[currentWeapon].fire(player);
+    //this.game.paused = true;
   }
   if(xKey.isDown && currentUpgrade > 0)
   {

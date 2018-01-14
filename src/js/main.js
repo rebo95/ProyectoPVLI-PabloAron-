@@ -1,6 +1,7 @@
 'use strict';
 
 var PlayScene = require('./play_scene.js');
+var GameO = require('./GameOver.js')
 var Controls = require('./controls.js');
 var Credits2 = require('./credits.js');
 var MainMenu = require('./initialMenu.js');
@@ -45,6 +46,7 @@ var PreloaderScene = {
     this.game.load.image('fondo', IMAGE_PATH + 'original.png');
     this.game.load.image('logo', IMAGE_PATH + 'logo.png');
     this.game.load.image('ourlogo', IMAGE_PATH + 'logoBack.png');
+    this.game.load.image('ended', IMAGE_PATH + 'gameOver.png');
     
     //sound assets
     //music
@@ -70,6 +72,8 @@ var PreloaderScene = {
     this.game.load.atlas('enemy_3',  IMAGE_PATH + 'enemy3sheet.png',  IMAGE_PATH + 'enemy3JSON.json');
     this.game.load.atlas('enemy_4',  IMAGE_PATH + 'enemy4sheet.png',  IMAGE_PATH + 'enemy4JSON.json');
 
+    this.game.load.atlas('pausaSprite',  IMAGE_PATH + 'pausasheet.png',  IMAGE_PATH + 'pausaJSON.json');
+
     this.game.load.image('roca', IMAGE_PATH + 'Enemy_4_Respawn.png')
 
     this.game.load.image('power_up', IMAGE_PATH + 'PowerUp_1.png')
@@ -82,7 +86,7 @@ var PreloaderScene = {
     
     //hudShip
     //Cargas de las balas
-    this.game.load.image('bullet_1', IMAGE_PATH + 'bullet1.png');
+    this.game.load.image('bullet_1', IMAGE_PATH + 'Double_1.png');
     this.game.load.image('laser', IMAGE_PATH + 'laser.png');
 
 
@@ -103,11 +107,14 @@ window.onload = function () {
 
   game.state.add('boot', BootScene);
   game.state.add('preloader', PreloaderScene);
-  game.state.add('credits2', Credits2);
-  game.state.add('menu', MainMenu);
-  game.state.add('controls2', Controls);  
-
 
   game.state.add('play', PlayScene);
+  game.state.add('credits2', Credits2);
+  game.state.add('menu', MainMenu);
+  game.state.add('controls2', Controls); 
+  game.state.add('fin', GameO); 
+
+
+  
   game.state.start('boot');
 };
