@@ -47,6 +47,8 @@ var PreloaderScene = {
     this.game.load.image('logo', IMAGE_PATH + 'logo.png');
     this.game.load.image('ourlogo', IMAGE_PATH + 'logoBack.png');
     this.game.load.image('ended', IMAGE_PATH + 'gameOver.png');
+    this.game.load.image('punts', IMAGE_PATH + 'puntuacion.png');
+    this.game.load.image('press', IMAGE_PATH + 'press.png');
     
     //sound assets
     //music
@@ -58,7 +60,7 @@ var PreloaderScene = {
     this.game.load.audio('blaster', 'audio/sfx.mp3' );
     
     // TODO: load here the assets for the game
-    this.game.load.image('ship', IMAGE_PATH + 'futurama.png'); 
+  
     
     this.game.load.atlas('naves',  IMAGE_PATH + 'shipSheet.png',  IMAGE_PATH + 'spritesShip.json');
     this.game.load.atlas('habilidades',  IMAGE_PATH + 'habilities.png',  IMAGE_PATH + 'habilitiesJSON.json');

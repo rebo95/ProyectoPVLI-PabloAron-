@@ -175,9 +175,8 @@ var PlayScene =
       this.pausaSprite;
 if(playerLives===0){
   if (nuestroJuego.input.keyboard.event.keyCode == 82){ 
-    nuestroJuego.paused = false;
-    playerLives = 3;
-  nuestroJuego.state.start('play', true, false);
+    //nuestroJuego.paused = false;
+    window.location.reload(true);
   
   }
 }else 
@@ -616,18 +615,21 @@ else {  explosion.play();
   if(obj1 === player){
 
   playerAlive = false;
-  points -= 1000;
+  points -= 200;
   if (points<=0){
     points = 0;
-
+  }
     playerLives --;
     playerArray.shift();
 
-    var playerPos = new pos(posXPlayerIni, posYPlayerIni);
+    if(target.x >= 400)
+    target.x -= 300;
+    else target.x = 0;
+    var playerPos = new pos(target.x + 50, posYPlayerIni);
     create_player(this.game,playerPos, 'naves', playerVel, playerLives);
-    target.x = 0;
+    
   
-  }
+  
   }
   // nos permite cohibir el disparo en caso de que se destruya nuestra 
 
@@ -862,9 +864,21 @@ function upgradesHandler(n)
 
 function gameOver(){
 if(playerLives === 0){
-  var creditsSprite = nuestroJuego.add.sprite( nuestroJuego.camera.x + nuestroJuego.camera.width/2, nuestroJuego.camera.y + nuestroJuego.camera.height/2, 'ended');
-  creditsSprite.anchor.setTo(0.5,0.5);
-  creditsSprite.scale.setTo(0.7,0.7);
+  var gameEndSprite = nuestroJuego.add.sprite( nuestroJuego.camera.x + nuestroJuego.camera.width/2, nuestroJuego.camera.y + nuestroJuego.camera.height/2, 'ended');
+  gameEndSprite.anchor.setTo(0.5,0.5);
+  gameEndSprite.scale.setTo(0.7,0.7);
+
+  var puntsSprite = nuestroJuego.add.sprite( gameEndSprite.x -gameEndSprite.width/2 , gameEndSprite.y + 50, 'punts');
+  puntsSprite.anchor.setTo(0.5,0.5);
+  puntsSprite.scale.setTo(0.5,0.5);
+
+  var textopunts =  nuestroJuego.add.text(gameEndSprite.x , gameEndSprite.y + 50, points , {font: "40px Italic", fill:"#ffff", align: "center"});
+  textopunts.anchor.setTo(0.5,0.5);
+
+  var pressSprite = nuestroJuego.add.sprite( gameEndSprite.x-gameEndSprite.width/2 , gameEndSprite.y + 100, 'press');
+  pressSprite.anchor.setTo(0,0.5);
+  pressSprite.scale.setTo(0.5,0.5);
+
   music.destroy();
   nuestroJuego.paused = true;
 }

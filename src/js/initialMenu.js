@@ -119,7 +119,7 @@ function actionOnClickPlay()
 {
     music.destroy();
 
-    this.game.state.start('play', true, false);
+    this.game.state.start('play');
 }
 
 function actionOnClickControls()
