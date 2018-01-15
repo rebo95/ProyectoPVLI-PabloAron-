@@ -10,6 +10,8 @@ var boton3;
 var txt;
 var spriteGroup;
 
+var velMultiplier;
+
 
 
 var points;
@@ -35,6 +37,7 @@ var arrayPosicionesEnemigos_2 = [];
 var arrayPosicionesEnemigos_3 = [];
 var arrayPosicionesEnemigos_4 = [];
 var arrayPosicionesEnemigos_5 = [];
+var arrayP = [];
 
 var arrayX_Enemy_1 = [];
 var arrayX_Enemy_2 = [];
@@ -78,8 +81,12 @@ var speedSprite;
 
 //PowerUps
 var upgrades = [];
-var currentUpgrade = 2;
+var currentUpgrade = 0;
 var powerup;
+var powerup2;
+var powerup3;
+var powerup4;
+var powerup5;
 
 var playerAlive = true;
 
@@ -438,12 +445,54 @@ shieldSprite.frameName = 'blueshield';
 spriteGroup = this.game.add.group();  
 spriteGroup.addMultiple([boton3, txt, speedSprite, missileSprite, doubleSprite, laserSprite, optionSprite, shieldSprite]);
 
+powerup = this.game.add.sprite(350, 300, 'power_up')
+powerup.anchor.setTo(0.5, 0.5);
+powerup.scale.setTo(3,3);
+this.game.physics.arcade.enable(powerup);
+this.game.world.addChild(powerup);
+powerup.body.collideWorldBounds = true;
 
+arrayP.push(powerup);
+
+powerup2 = this.game.add.sprite(500,300, 'power_up')
+powerup2.anchor.setTo(0.5, 0.5);
+powerup2.scale.setTo(3,3);
+this.game.physics.arcade.enable(powerup2);
+this.game.world.addChild(powerup2);
+powerup2.body.collideWorldBounds = true;
+
+arrayP.push(powerup2);
+
+powerup3 = this.game.add.sprite(650, 300, 'power_up')
+powerup3.anchor.setTo(0.5, 0.5);
+powerup3.scale.setTo(3,3);
+this.game.physics.arcade.enable(powerup3);
+this.game.world.addChild(powerup3);
+powerup3.body.collideWorldBounds = true;
+
+arrayP.push(powerup3)
+
+powerup4 = this.game.add.sprite(800, 300, 'power_up')
+powerup4.anchor.setTo(0.5, 0.5);
+powerup4.scale.setTo(3,3);
+this.game.physics.arcade.enable(powerup4);
+this.game.world.addChild(powerup4);
+powerup4.body.collideWorldBounds = true;
+
+arrayP.push(powerup4)
+
+powerup5 = this.game.add.sprite(950, 300, 'power_up')
+powerup5.anchor.setTo(0.5, 0.5);
+powerup5.scale.setTo(3,3);
+this.game.physics.arcade.enable(powerup5);
+this.game.world.addChild(powerup5);
+powerup5.body.collideWorldBounds = true;
+
+arrayP.push(powerup5)
+
+velMultiplier = 1;
 
 level.resizeWorld();
-
-
-
   },
 
 
@@ -563,15 +612,56 @@ level.resizeWorld();
       }
     }
 
+for(var z = 0; z<arrayP.length; z++)
+    this.game.physics.arcade.overlap(player, arrayP[z], collisionHandler2, null, this);
+/*
     if(this.game.physics.arcade.overlap(player, powerup))
     {
       collisionHandler2(powerup, player);
       currentUpgrade++;
-      if(currentUpgrade > upgrades.size())
+      if(currentUpgrade > upgrades.length)
       {
         currentUpgrade = 1;
       }
     }
+
+    if(this.game.physics.arcade.overlap(player, powerup2))
+    {
+      collisionHandler2(powerup2, player);
+      currentUpgrade++;
+      if(currentUpgrade > upgrades.length)
+      {
+        currentUpgrade = 1;
+      }
+    }
+    if(this.game.physics.arcade.overlap(player, powerup3))
+    {
+      collisionHandler2(powerup3, player);
+      currentUpgrade++;
+      if(currentUpgrade > upgrades.length)
+      {
+        currentUpgrade = 1;
+      }
+    }
+    if(this.game.physics.arcade.overlap(player, powerup4))
+    {
+      collisionHandler2(powerup4, player);
+      currentUpgrade++;
+      if(currentUpgrade > upgrades.length)
+      {
+        currentUpgrade = 1;
+      }
+    }
+    if(this.game.physics.arcade.overlap(player, powerup5))
+    {
+      collisionHandler2(powerup5, player);
+      currentUpgrade++;
+      if(currentUpgrade > upgrades.length)
+      {
+        currentUpgrade = 1;
+      }
+    }
+*/
 
     //this.game.camera.x = target.x;
 
@@ -581,20 +671,26 @@ level.resizeWorld();
     if(player.x<target.x)
     player.x = target.x;
 
-    for(var i = 0; i<enemyArray.length; i++ )
-    {
-      this.game.debug.body(enemyArray[i]);
-    }
+   // for(var i = 0; i<enemyArray.length; i++ )
+    //{
+     // this.game.debug.body(enemyArray[i]);
+    //}
     
 
-    this.game.debug.body(player);
+    //this.game.debug.body(player);
   },
 
 };   
 //////////////////////////////
 //Funciones Auxiliares independientes de la jerarquía
 function collisionHandler2(obj1, obj2){
-  obj1.kill();
+  obj2.kill();
+
+  currentUpgrade++;
+  if(currentUpgrade > upgrades.length)
+  {
+    currentUpgrade = 1;
+  }
 }
 
 function collisionHandler(obj1, obj2)
@@ -834,9 +930,10 @@ function createSecondPlayer(vidas){
 
 function upgradesHandler(n)
 {
+  //en este momento es en el que tenemos que poner el sprite a naranja
   if(n === 1)
   {
-    playerVel += 0.5;
+    velMultiplier += 1;
   }
   else if(n == 2)
   {
@@ -852,6 +949,7 @@ function upgradesHandler(n)
   }
   else if(n == 5)
   {
+    createSecondPlayer();
     //Hay que llamar a la nave auxiliar
   }
   else if(n == 6)
@@ -951,23 +1049,23 @@ this.body.x += target_vel;
 
   if (leftKey.isDown)
   {
-      this.body.x -= this._velocity;
+      this.body.x -= this._velocity * velMultiplier;
 
   }
   else if (rightKey.isDown)
   {
-    this.body.x += this._velocity;
+    this.body.x += this._velocity * velMultiplier;
 
   }
 
   if (upKey.isDown)
   {
-    this.body.y -= this._velocity;
+    this.body.y -= this._velocity * velMultiplier;
       player.frameName = 'down';
   }
   else if (downKey.isDown)
   {
-    this.body.y += this._velocity;
+    this.body.y += this._velocity * velMultiplier;
       player.frameName = 'up';
   }  else {
     player.frameName = 'front';
@@ -981,6 +1079,7 @@ this.body.x += target_vel;
   if(xKey.isDown && currentUpgrade > 0)
   {
     upgradesHandler(currentUpgrade);
+    currentUpgrade = 0;
   }
 
 }
@@ -1085,8 +1184,8 @@ Weapon.SingleBullet = function (game)
   Phaser.Group.call(this, game, game.world, 'Single Bullet', false, true, Phaser.Physics.ARCADE);
   
   this.nextFire = 0;
-  this.bulletSpeed = 500;
-  this.fireRate = 60;
+  this.bulletSpeed = 1200;
+  this.fireRate = 250;
   
   for (var i = 0; i < 64; i++)
   {
