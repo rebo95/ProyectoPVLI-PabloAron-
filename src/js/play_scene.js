@@ -96,7 +96,7 @@ var target_vel = 1;
 
 //Enemigo que avanza un poco y retrocede en diagonal
 var enemy_1;
-var enemy_1Vel = 2;
+var enemy_1Vel = 5;
 var enemy_1Lives = 1;
 
 
@@ -105,17 +105,17 @@ var enemy_aaronLives = 1;
 
 //Enemigo que avanza en línea recta y va hacia el player
 var enemy_2;
-var enemy_2Vel = 3;
+var enemy_2Vel = 2;
 var enemy_2Lives = 1;
 
 //Enemigo que sube y baja mientras avanza
 var enemy_3;
-var enemy_3Vel = 1;
+var enemy_3Vel = 3;
 var enemy_3Lives = 1;
 
 //Enemigo que alcanza la y del player y avanza en ese sentido
 var enemy_4;
-var enemy_4Vel = 1;
+var enemy_4Vel = 4;
 var enemy_4Lives = 1;
 
 //Balas
@@ -704,12 +704,12 @@ if(obj1._velocity !== 0 ){
 else {  explosion.play();
   explode(obj2.x,obj2.y);
 }
+
   //Enemy_5
   obj2.kill();
   
   //explosion.play();
   if(obj1 === player){
-
   playerAlive = false;
   points -= 200;
   if (points<=0){
@@ -723,9 +723,6 @@ else {  explosion.play();
     else target.x = 0;
     var playerPos = new pos(target.x + 50, posYPlayerIni);
     create_player(this.game,playerPos, 'naves', playerVel, playerLives);
-    
-  
-  
   }
   // nos permite cohibir el disparo en caso de que se destruya nuestra 
 
@@ -937,11 +934,11 @@ function upgradesHandler(n)
   }
   else if(n == 2)
   {
-    currentWeapon = 1;
+    currentWeapon = 2;
   }
   else if(n == 3)
   {
-    currentWeapon = 2;
+    currentWeapon = 1;
   }
   else if(n == 4)
   {
@@ -1218,8 +1215,8 @@ Weapon.SingleBullet = function (game)
     Phaser.Group.call(this, game, game.world, 'UpFront', false, true, Phaser.Physics.ARCADE);
     
     this.nextFire = 0;
-    this.bulletSpeed = 600;
-    this.fireRate = 100;
+    this.bulletSpeed = 1200;
+    this.fireRate = 250;
     
     for (var i = 0; i < 64; i++)
     {
@@ -1252,8 +1249,8 @@ Weapon.SingleBullet = function (game)
     Phaser.Group.call(this, game, game.world, 'FrontDown', false, true, Phaser.Physics.ARCADE);
     
     this.nextFire = 0;
-    this.bulletSpeed = 600;
-    this.fireRate = 100;
+    this.bulletSpeed = 1200;
+    this.fireRate = 250;
     
     for (var i = 0; i < 64; i++)
     {
@@ -1289,8 +1286,8 @@ Weapon.SingleBullet = function (game)
     Phaser.Group.call(this, game, game.world, 'ThreeWay', false, true, Phaser.Physics.ARCADE);
       
     this.nextFire = 0;
-    this.bulletSpeed = 600;
-    this.fireRate = 100;
+    this.bulletSpeed = 1200;
+    this.fireRate = 250;
       
     for (var i = 0; i < 64; i++)
     {
@@ -1327,7 +1324,7 @@ Weapon.SingleBullet = function (game)
     Phaser.Group.call(this, game, game.world, 'Laser', false, true, Phaser.Physics.ARCADE);
         
     this.nextFire = 0;
-    this.bulletSpeed = 600;
+    this.bulletSpeed = 1400;
     this.fireRate = 100;
         
     for (var i = 0; i < 64; i++)
@@ -1415,7 +1412,8 @@ Enemy_1.prototype.Movement = function()
     if(this.x < this.game.camera.x + this.game.camera.width / 2 + 100)
     {
       this.y += this._velocity;
-      this.x-= 2 * target_vel;
+      //this.x-= 2 * target_vel;
+      this.x-=this._velocity;
     }
     
     this.Enemy_1Mov = true;
@@ -1470,7 +1468,9 @@ function Enemy_3(game, position, sprite, velocity, lives)
 {
   Enemy.apply(this, [game, position, sprite, velocity, lives]);
 
-  this._iniY = position._y;
+  this._iniY = position.y;
+  this._up = false;
+  this._max_y = 5;
 }
 
 Enemy_3.prototype = Object.create(Enemy.prototype);
@@ -1480,8 +1480,8 @@ Enemy_3.prototype.constructor = Enemy_3;
 
 Enemy_3.prototype.Movement = function()
 {
-  this._max_y = 80;
-  this._up = false;
+  
+
   this.move_along_enemy(this._velocity);
   
   if(!this._up)
@@ -1500,6 +1500,7 @@ Enemy_3.prototype.Movement = function()
       this._up = false;
     }
   }
+
     
 }
 
@@ -1513,6 +1514,12 @@ Enemy_3.prototype.update = function()
 function Enemy_4(game, position, sprite, velocity, lives)
 {
   Enemy.apply(this, [game, position, sprite, velocity, lives]);
+
+  this._found = false;
+  this._localized = false;
+  this._upMovement = false;
+  this._downMovement = false;
+
 }
 
 Enemy_4.prototype = Object.create(Enemy.prototype);
@@ -1522,10 +1529,7 @@ Enemy_4.prototype.constructor = Enemy_4;
 Enemy_4.prototype.Movement = function()
 {
 
-  this._found = false;
-  this._localized = false;
-  this._upMovement = false;
-  this._downMovement = false;
+
 
   if(!this._localized)
   {
