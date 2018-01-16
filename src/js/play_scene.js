@@ -12,7 +12,10 @@ var spriteGroup;
 
 var velMultiplier;
 
+var finalDeScroll;
+var lanzacinematica;
 
+var ganado = false;
 
 var points;
 var posXPlayerIni;
@@ -20,6 +23,25 @@ var posYPlayerIni;
 var posXCameraIni;
 var posYCameraIni;
 
+
+var gameVictoriaSprite;
+var puntsSpriteVictoria; 
+var textopuntsVictoria;
+var pressSpriteVictoria;
+
+var impreso;
+var impreso2;
+
+var grupoVictoria;
+
+var end;
+var endX;
+
+var turbo;
+var turboX;
+
+var youWin;
+var youWinX;
 
 var creditsSprite ;
 
@@ -92,7 +114,7 @@ var playerAlive = true;
 
 var target;
 var target2;
-var target_vel = 1;
+var target_vel = 5;
 
 //Enemigo que avanza un poco y retrocede en diagonal
 var enemy_1;
@@ -150,6 +172,11 @@ var PlayScene =
     posXCameraIni = this.game.camera.x;
     posYCameraIni = this.game.camera.y;
 
+    finalDeScroll = false;
+    lanzacinematica = false;
+    
+
+
     this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
     //Map
@@ -177,10 +204,11 @@ var PlayScene =
     spacebarKey = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
     xKey = this.game.input.keyboard.addKey(Phaser.Keyboard.X);
 
-
+///////ESTO AQUÏ HAY QUE CAMKBIARLO; QUE SOLO REINICIE EN PAUSA CUANHDO NOS HEMOS pasadp el juego o hemos muert 
     window.onkeydown = function() {
       this.pausaSprite;
-if(playerLives===0){
+if(nuestroJuego.paused)
+if(playerLives>=0){
   if (nuestroJuego.input.keyboard.event.keyCode == 82){ 
     //nuestroJuego.paused = false;
     window.location.reload(true);
@@ -330,6 +358,32 @@ if(playerLives===0){
 
 });    
 
+end = this.game.add.physicsGroup();
+map.createFromObjects('objetos', 'end', '', 1327, true, false, end);
+end.forEach(function(integrante){
+  // nos da la poiscion de cada uno de los integrantes
+endX = integrante.x;
+
+});    
+
+turbo = this.game.add.physicsGroup();
+map.createFromObjects('objetos', 'turbo', '', 1277, true, false, turbo);
+turbo.forEach(function(integrante){
+  // nos da la poiscion de cada uno de los integrantes
+  turboX = integrante.x;
+
+});  
+
+
+youWin = this.game.add.physicsGroup();
+map.createFromObjects('objetos', 'win', '', 1427, true, false, youWin);
+youWin.forEach(function(integrante){
+  // nos da la poiscion de cada uno de los integrantes
+youWinX = integrante.x;
+
+});  
+
+
     enemy_1_TiledToPhaser = this.game.add.physicsGroup();
     map.createFromObjects('objetos', 'enemy_1', '', 779, true, false, enemy_1_TiledToPhaser);// asÃ­ funciona igual , para la nave no nos hace falta poner el grupo
     enemy_1_TiledToPhaser.forEach(function(integrante){
@@ -442,8 +496,11 @@ shieldSprite.x = boton3.x-boton3.width/2 + 5 * speedSprite.width;;
 shieldSprite.y = boton3.y- boton3.height/2;
 shieldSprite.frameName = 'blueshield';
 
+
 spriteGroup = this.game.add.group();  
 spriteGroup.addMultiple([boton3, txt, speedSprite, missileSprite, doubleSprite, laserSprite, optionSprite, shieldSprite]);
+
+grupoVictoria = this.game.add.group();  
 
 powerup = this.game.add.sprite(350, 300, 'power_up')
 powerup.anchor.setTo(0.5, 0.5);
@@ -499,19 +556,23 @@ level.resizeWorld();
 
   update: function ()
   {
+
     gameOver();
     if(akey.isDown)
     {
-      //this.game.state.start('menu',true , false);
-      //music.destroy();
-      //this.game.paused = true;
-
+      ganado = true;
+      console.log("pulsaste ganar");
     }
+
+    if(this.game.camera.x>= endX)
+    win();
+
+
     if(!(target.x < this.game.world.width - this.game.camera.width))
     target_vel = 0;
     target.x +=target_vel;
 
-    spriteGroup.x = this.game.camera.x;;
+    spriteGroup.x = this.game.camera.x;
 
 
     txt.setText("  Score : " + points + "        Lifes : " + playerLives);
@@ -803,6 +864,8 @@ function soundStopped(sound){
 
 }
 
+
+
 function explode(posExplosionx,posExplosiony){
   explosion.play();
 
@@ -977,8 +1040,41 @@ if(playerLives === 0){
   music.destroy();
   nuestroJuego.paused = true;
 }
+}
 
 
+function win(){
+
+  finalDeScroll = true; 
+  if(!lanzacinematica)
+  target_vel+=0.4;
+
+  if(nuestroJuego.camera.x >= turboX){
+    lanzacinematica = true;
+
+    if(player.x >= nuestroJuego.camera.x + nuestroJuego.camera.width - player.width/2){
+    player.kill();
+
+    gameVictoriaSprite = nuestroJuego.add.sprite( nuestroJuego.camera.x + nuestroJuego.camera.width/2, nuestroJuego.camera.y + nuestroJuego.camera.height/2, 'winer');
+    gameVictoriaSprite.anchor.setTo(0.5,0.5);
+    gameVictoriaSprite.scale.setTo(0.7,0.7);
+  
+    puntsSpriteVictoria = nuestroJuego.add.sprite( gameVictoriaSprite.x -gameVictoriaSprite.width/2 , gameVictoriaSprite.y + 50, 'punts');
+    puntsSpriteVictoria.anchor.setTo(0.5,0.5);
+    puntsSpriteVictoria.scale.setTo(0.5,0.5);
+  
+    textopuntsVictoria =  nuestroJuego.add.text(gameVictoriaSprite.x , gameVictoriaSprite.y + 50, points , {font: "40px Italic", fill:"#ffff", align: "center"});
+    textopuntsVictoria.anchor.setTo(0.5,0.5);
+  
+    pressSpriteVictoria = nuestroJuego.add.sprite( gameVictoriaSprite.x-gameVictoriaSprite.width/2 , gameVictoriaSprite.y + 100, 'press');
+    pressSpriteVictoria.anchor.setTo(0,0.5);
+    pressSpriteVictoria.scale.setTo(0.5,0.5);
+  
+    //grupoVictoria.addMultiple([gameVictoriaSprite, puntsSpriteVictoria, textopuntsVictoria,pressSpriteVictoria]);
+    nuestroJuego.paused = true ;
+    }
+  }
+   
 }
 
 
@@ -1040,8 +1136,11 @@ Player.prototype.Movement = function()
 if(akey.isDown){
   //createSecondPlayer();
 }
-
+if(lanzacinematica){
+this.body.x += target_vel + 20;}
+else{
 this.body.x += target_vel;
+}
 
 
   if (leftKey.isDown)

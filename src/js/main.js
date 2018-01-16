@@ -25,13 +25,13 @@ var PreloaderScene = {
   preload: function () {
  
     // cuando queramos trabaar desde el local debemos inhabilitar estas direcciones, si no, buscará los recursos en nuestro repositorio y no en nuestra carpeta de juego
-    this.game.load.baseURL = 'https://rebo95.github.io/ProyectoPVLI-PabloAron-/src/';
-    this.game.load.crossOrigin = 'anonymous';
+    //this.game.load.baseURL = 'https://rebo95.github.io/ProyectoPVLI-PabloAron-/src/';
+    //this.game.load.crossOrigin = 'anonymous';
     
     this.loadingBar = this.game.add.sprite(0, 240, 'preloader_bar');
     this.loadingBar.anchor.setTo(0, 0.5);
     this.load.setPreloadSprite(this.loadingBar);
-
+//
 
 
 
@@ -49,6 +49,7 @@ var PreloaderScene = {
     this.game.load.image('ended', IMAGE_PATH + 'gameOver.png');
     this.game.load.image('punts', IMAGE_PATH + 'puntuacion.png');
     this.game.load.image('press', IMAGE_PATH + 'press.png');
+    this.game.load.image('winer', IMAGE_PATH + 'winer.png');
     
     //sound assets
     //music
@@ -93,7 +94,8 @@ var PreloaderScene = {
 
 
     //cargas necesarias para el tiled y el mapa
-    this.load.tilemap('level', './images/nivelGdiameter.json', null, Phaser.Tilemap.TILED_JSON);
+    //this.load.tilemap('level', './images/nivelGdiameter.json', null, Phaser.Tilemap.TILED_JSON);
+    this.load.tilemap('level', './images/mapaPrueba2.json', null, Phaser.Tilemap.TILED_JSON);
     this.game.load.image('tilespng', 'images/tiles.png');
   },
 
