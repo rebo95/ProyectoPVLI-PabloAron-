@@ -49,16 +49,22 @@ var PreloaderScene = {
     this.game.load.image('ended', IMAGE_PATH + 'gameOver.png');
     this.game.load.image('punts', IMAGE_PATH + 'puntuacion.png');
     this.game.load.image('press', IMAGE_PATH + 'press.png');
+    this.game.load.image('winer', IMAGE_PATH + 'winer.png');
     
 
     //sound assets
     //music
-    this.game.load.audio('menuMusic','audio/menuMusic.mp3' )
-    this.game.load.audio('gameMusic','audio/gameMusic.mp3' )
+    this.game.load.audio('menuMusic','audio/menuMusic.mp3' );
+    this.game.load.audio('gameMusic','audio/gameMusic.mp3' );
 
     //sound effects
-    this.game.load.audio('explosion','audio/explosion.mp3' )
+    this.game.load.audio('explosion','audio/explosion.mp3' );
     this.game.load.audio('blaster', 'audio/sfx.mp3' );
+    this.game.load.audio('powerUpSound','audio/powerUpTaked.mp3' );
+    this.game.load.audio('powerUpSelected', 'audio/power_up_selected.mp3' );
+    this.game.load.audio('accelerate','audio/aceleron.mp3' );
+    this.game.load.audio('turboExplosion', 'audio/tubo.mp3' );
+    this.game.load.audio('tueboBlaster', 'audio/turboon.mp3' );
     
     // TODO: load here the assets for the game
   

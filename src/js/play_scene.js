@@ -15,6 +15,9 @@ var velMultiplier;
 var finalDeScroll;
 var lanzacinematica;
 
+var ignicion = false;
+var secondignicion = false;
+
 var enJuego = true;
 
 var points;
@@ -167,6 +170,11 @@ var music;
 //sound effects
 var shootSound;
 var explosion;
+var turbosound;
+var turboBlaster;
+var powerUpTaken;
+var powerUpSelected;
+var aceleron;
 
 var map;
 var layer;
@@ -253,6 +261,11 @@ if(playerLives>=0){
    
     shootSound = this.game.add.audio('blaster');
     explosion = this.game.add.audio('explosion');
+    turbosound= this.game.add.audio('turboExplosion');
+    turboBlaster= this.game.add.audio('tueboBlaster');
+    powerUpTaken= this.game.add.audio('powerUpSound');
+    powerUpSelected= this.game.add.audio('powerUpSelected');
+    aceleron= this.game.add.audio('accelerate');
   
     
     //shootSound.onStop.add(soundStopped, this);
@@ -808,6 +821,7 @@ function collisionWithShield(){//aquí se presenta el sistema de colisionado con
 function collisionHandler2(obj1, obj2){
   obj2.kill();
   currentUpgrade++;
+  powerUpTaken.play();
   if(currentUpgrade > upgrades.length)
   {
     currentUpgrade = 1;
@@ -1164,9 +1178,24 @@ if(playerLives === 0){
 
 function win(){
 
+  music.volume = 0.5;
+  aceleron.volume = 4;
+  turboBlaster.volume = 4;
+  turbosound.volume = 4       ;
+  if(shield){
+    armor.destroy();
+  }
   finalDeScroll = true; 
-  if(!lanzacinematica)
+  if(!lanzacinematica){
+  
   target_vel+=0.4;
+
+  if(!ignicion){
+  aceleron.play();
+  ignicion = true;
+  }
+
+  }
 
   if(nuestroJuego.camera.x >= turboX){
     lanzacinematica = true;
@@ -1178,11 +1207,11 @@ function win(){
     gameVictoriaSprite.anchor.setTo(0.5,0.5);
     gameVictoriaSprite.scale.setTo(0.7,0.7);
   
-    puntsSpriteVictoria = nuestroJuego.add.sprite( gameVictoriaSprite.x -gameVictoriaSprite.width/2 , gameVictoriaSprite.y + 50, 'punts');
+    puntsSpriteVictoria = nuestroJuego.add.sprite( gameVictoriaSprite.x - gameVictoriaSprite.width/2 , gameVictoriaSprite.y + 50, 'punts');
     puntsSpriteVictoria.anchor.setTo(0.5,0.5);
     puntsSpriteVictoria.scale.setTo(0.5,0.5);
   
-    textopuntsVictoria =  nuestroJuego.add.text(gameVictoriaSprite.x , gameVictoriaSprite.y + 50, points , {font: "40px Italic", fill:"#ffff", align: "center"});
+    textopuntsVictoria =  nuestroJuego.add.text(gameVictoriaSprite.x + 90, gameVictoriaSprite.y + 50, points , {font: "40px Italic", fill:"#ffff", align: "center"});
     textopuntsVictoria.anchor.setTo(0.5,0.5);
   
     pressSpriteVictoria = nuestroJuego.add.sprite( gameVictoriaSprite.x-gameVictoriaSprite.width/2 , gameVictoriaSprite.y + 100, 'press');
@@ -1257,7 +1286,14 @@ if(akey.isDown){
   //createSecondPlayer();
 }
 if(lanzacinematica){
-this.body.x += target_vel + 20;}
+this.body.x += target_vel + 20;
+if(!secondignicion){
+  turboBlaster.play();
+  turbosound.play();
+  secondignicion = true;
+}
+
+}
 else{
 this.body.x += target_vel;
 }
@@ -1295,6 +1331,7 @@ this.body.x += target_vel;
   if(xKey.isDown && currentUpgrade > 0)
   {
     upgradesHandler(currentUpgrade);
+    powerUpSelected.play();
     currentUpgrade = 0;
   }
 
