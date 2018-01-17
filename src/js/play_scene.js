@@ -15,7 +15,7 @@ var velMultiplier;
 var finalDeScroll;
 var lanzacinematica;
 
-var ganado = false;
+var enJuego = true;
 
 var points;
 var posXPlayerIni;
@@ -74,6 +74,9 @@ var enemy_4_TiledToPhaser;
 var enemy_5_TiledToPhaser; 
 
 
+
+
+
 var naveEspacial;
 var secondPlayerAlive = false;
 var player2;
@@ -87,10 +90,19 @@ var player;
 var playerVel = 5;
 var playerLives;
 var shield = false;
-var shield_resistance = 6;
+var shieldCreated = false;
+var armor;
+var shield_resistance = 4;
 
 var weapons = [];
 var currentWeapon = 0;
+
+var shieldactivo = false;
+var optionactivo = false;
+var laseractivo = false;
+var doubleactivo = false;
+var missileactivo = false;
+var speedactivo = false;
 
 
 var shieldSprite;
@@ -104,6 +116,10 @@ var speedSprite;
 //PowerUps
 var upgrades = [];
 var currentUpgrade = 0;
+
+var powerUps_TiledToPhaser;
+
+
 var powerup;
 var powerup2;
 var powerup3;
@@ -207,14 +223,14 @@ var PlayScene =
 ///////ESTO AQUÏ HAY QUE CAMKBIARLO; QUE SOLO REINICIE EN PAUSA CUANHDO NOS HEMOS pasadp el juego o hemos muert 
     window.onkeydown = function() {
       this.pausaSprite;
-if(nuestroJuego.paused)
+if(nuestroJuego.paused && !enJuego){
 if(playerLives>=0){
   if (nuestroJuego.input.keyboard.event.keyCode == 82){ 
     //nuestroJuego.paused = false;
     window.location.reload(true);
   
   }
-}else 
+}}else 
       if (nuestroJuego.input.keyboard.event.keyCode == 80){
         if(nuestroJuego.paused){
           nuestroJuego.paused = false;
@@ -436,6 +452,16 @@ enemy_5_TiledToPhaser.forEach(function(integrante5){
 });
 
 
+
+powerUps_TiledToPhaser = this.game.add.physicsGroup();
+map.createFromObjects('objetos', 'pow', '', 2583, true, false,  powerUps_TiledToPhaser);// asÃ­ funciona igual , para la nave no nos hace falta poner el grupo
+powerUps_TiledToPhaser.forEach(function(integranteP){
+  // nos da la poiscion de cada uno de los integrante
+createPowerUp(integranteP.x, integranteP.y)
+  //crea(nuestroJuego, arrayPosicionesEnemigos1[arrayPosicionesEnemigos1.length-1],'enemy_1',enemy_1Vel,enemy_1Lives);
+});
+
+
 var posBot3 = new pos(this.game.camera.x + this.game.camera.width /2 , 50);
 boton3 = new HUD(this.game, posBot3, 'blackRectangle', target_vel);
 boton3.anchor.setTo(0.5,0.5);
@@ -501,6 +527,7 @@ spriteGroup = this.game.add.group();
 spriteGroup.addMultiple([boton3, txt, speedSprite, missileSprite, doubleSprite, laserSprite, optionSprite, shieldSprite]);
 
 grupoVictoria = this.game.add.group();  
+/*
 
 powerup = this.game.add.sprite(350, 300, 'power_up')
 powerup.anchor.setTo(0.5, 0.5);
@@ -546,6 +573,7 @@ this.game.world.addChild(powerup5);
 powerup5.body.collideWorldBounds = true;
 
 arrayP.push(powerup5)
+*/
 
 velMultiplier = 1;
 
@@ -560,8 +588,6 @@ level.resizeWorld();
     gameOver();
     if(akey.isDown)
     {
-      ganado = true;
-      console.log("pulsaste ganar");
     }
 
     if(this.game.camera.x>= endX)
@@ -646,16 +672,16 @@ level.resizeWorld();
       if(shield)
       {
         for(var i = 0; i<enemyArray.length; i++ ){
-          this.game.physics.arcade.overlap(weapons[currentWeapon], enemyArray[i], collisionHandler, null, this);
-          this.game.physics.arcade.overlap(player, enemyArray[i], collisionHandler, null, this);
+          this.game.physics.arcade.overlap(weapons[currentWeapon], enemyArray[i], collisionHandler, null, this); //object2, object 1)
+          if(this.game.physics.arcade.overlap(player, enemyArray[i]))
+          {
+
+            explode(enemyArray[i].x,enemyArray[i].y);
+            enemyArray[i].kill();
+            collisionWithShield();
+          }
+
       }
-  
-        shield_resistance--;
-        if(shield_resistance <= 0)
-        {
-          shield = false;
-          shield_resistance = 6;
-        } 
         console.log(shield_resistance);
       }
       else
@@ -675,6 +701,21 @@ level.resizeWorld();
 
 for(var z = 0; z<arrayP.length; z++)
     this.game.physics.arcade.overlap(player, arrayP[z], collisionHandler2, null, this);
+
+    if(shield){
+      
+      if(!shieldCreated){
+      armor = this.game.add.sprite(player.x + 20, player.y, 'escudo');
+      armor.anchor.setTo(0.5,0.5);
+      armor.scale.setTo(2,2);
+      armor.frameName = 'shield1';
+      shieldCreated = true;
+      }
+
+      armor.x = player.x + player.width/2 + 20 ;
+      armor.y = player.y;
+    }
+    
 /*
     if(this.game.physics.arcade.overlap(player, powerup))
     {
@@ -744,9 +785,28 @@ for(var z = 0; z<arrayP.length; z++)
 };   
 //////////////////////////////
 //Funciones Auxiliares independientes de la jerarquía
+function collisionWithShield(){//aquí se presenta el sistema de colisionado con el escudo de la nave
+  shield_resistance--;
+  if(shield_resistance == 3)
+    armor.frameName = 'shield2';
+  else if(shield_resistance == 2)
+    armor.frameName = 'shield3';
+    else if(shield_resistance == 1)
+    armor.frameName = 'shield4';
+
+  if(shield_resistance <= 0)
+  {
+    shield = false;
+    shieldCreated = false;
+    armor.destroy();
+
+    shield_resistance = 4;
+  } 
+  //dentro iría la lógica de muerte del escudo , si tenemos escudo activo pasará por este collision handler , si no por el original 
+}
+
 function collisionHandler2(obj1, obj2){
   obj2.kill();
-
   currentUpgrade++;
   if(currentUpgrade > upgrades.length)
   {
@@ -766,11 +826,11 @@ else {  explosion.play();
   explode(obj2.x,obj2.y);
 }
 
-  //Enemy_5
+  
   obj2.kill();
   
   //explosion.play();
-  if(obj1 === player){
+  if(obj1 === player){//player es objeto 1 cuando colisionamos contra enemigos 
   playerAlive = false;
   points -= 200;
   if (points<=0){
@@ -816,22 +876,69 @@ else return false;
 
 
 function upgradesSprites(){
+
 if(currentUpgrade === 0){
+  if(!shieldactivo)
   shieldSprite.frameName = 'blueshield';
+
+  if(!optionactivo)
   optionSprite.frameName = 'blueoption';
+
+  if(!laseractivo)
   laserSprite.frameName = 'bluelaser';
+
+  if(!doubleactivo)
   doubleSprite.frameName = 'bluedouble';
+
+  if(!missileactivo)
   missileSprite.frameName = 'bluemissile';
+
+  if(!speedactivo)
   speedSprite.frameName = 'bluespeed';
 }
 else if (currentUpgrade === 1){
-  speedSprite.frameName = 'orangespeed'
+  speedSprite.frameName = 'orangespeed';
+  if(xKey.isDown)
+  {
+    speedSprite.frameName = 'orange';
+    speedactivo = true;
+  }
 }
-else if (currentUpgrade === 2){ missileSprite.frameName = 'orangemissile'}
-else if (currentUpgrade === 3){ doubleSprite.frameName = 'orangedouble'}
-else if (currentUpgrade === 4){ laserSprite.frameName = 'orangelaser'}
-else if (currentUpgrade === 5){ optionSprite.frameName = 'orangeoption'}
-else if (currentUpgrade === 6){ shieldSprite.frameName = 'orangeshield'}
+else if (currentUpgrade === 2){ missileSprite.frameName = 'orangemissile';
+if(xKey.isDown)
+{
+  missileSprite.frameName = 'orange';
+  missileactivo = true;
+}
+}
+else if (currentUpgrade === 3){ doubleSprite.frameName = 'orangedouble';
+if(xKey.isDown)
+{
+  doubleSprite.frameName = 'orange';
+  doubleactivo = true;
+}
+}
+else if (currentUpgrade === 4){ laserSprite.frameName = 'orangelaser';
+if(xKey.isDown)
+{
+  laserSprite.frameName = 'orange';
+  laseractivo = true;
+}
+}
+else if (currentUpgrade === 5){ optionSprite.frameName = 'orangeoption';
+if(xKey.isDown)
+{
+  optionSprite.frameName = 'orange';
+  optionactivo = true;
+}
+}
+else if (currentUpgrade === 6){ shieldSprite.frameName = 'orangeshield';
+if(xKey.isDown)
+{
+  shieldSprite.frameName = 'orange';
+  shieldactivo = true;
+}
+}
 }
 
 function spawnEnemy(enemy_x_array, enemy_pos_array, enemySpriteName, enemyVel,enemyLives, enemy_Type){ 
@@ -974,6 +1081,16 @@ function createEnemy_5(juego, posicion, spriteName, velocidad, vidas){
 
 }
 
+function createPowerUp(posX, posY){
+  var powerUp = nuestroJuego.add.sprite(posX, posY, 'power_up')
+  powerUp.anchor.setTo(0.5, 0.5);
+  powerUp.scale.setTo(3,3);
+  nuestroJuego.physics.arcade.enable(powerUp);
+  nuestroJuego.world.addChild(powerUp);
+  powerUp.body.collideWorldBounds = true;
+  arrayP.push(powerUp)
+}
+
 function createSecondPlayer(vidas){
   vidas = 3;
   var player2Pos = new pos(player.x - 50, player.y + 50);
@@ -1038,8 +1155,10 @@ if(playerLives === 0){
   pressSprite.scale.setTo(0.5,0.5);
 
   music.destroy();
+  enjuego = false ;
   nuestroJuego.paused = true;
 }
+
 }
 
 
@@ -1071,10 +1190,11 @@ function win(){
     pressSpriteVictoria.scale.setTo(0.5,0.5);
   
     //grupoVictoria.addMultiple([gameVictoriaSprite, puntsSpriteVictoria, textopuntsVictoria,pressSpriteVictoria]);
+    enJuego = false;
     nuestroJuego.paused = true ;
     }
   }
-   
+
 }
 
 

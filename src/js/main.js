@@ -49,8 +49,8 @@ var PreloaderScene = {
     this.game.load.image('ended', IMAGE_PATH + 'gameOver.png');
     this.game.load.image('punts', IMAGE_PATH + 'puntuacion.png');
     this.game.load.image('press', IMAGE_PATH + 'press.png');
-    this.game.load.image('winer', IMAGE_PATH + 'winer.png');
     
+
     //sound assets
     //music
     this.game.load.audio('menuMusic','audio/menuMusic.mp3' )
@@ -69,6 +69,7 @@ var PreloaderScene = {
     this.game.load.atlas('controlsSprite',  IMAGE_PATH + 'controlssheet.png',  IMAGE_PATH + 'controlsJSON.json');
     this.game.load.atlas('creditsSprite',  IMAGE_PATH + 'creditssheet.png',  IMAGE_PATH + 'creditsJSON.json');
     this.game.load.atlas('menuSprite',  IMAGE_PATH + 'menusheet.png',  IMAGE_PATH + 'menuJSON.json');
+    this.game.load.atlas('escudo',  IMAGE_PATH + 'escudosheet.png',  IMAGE_PATH + 'escudoJSON.json');
 
     this.game.load.atlas('enemy_1',  IMAGE_PATH + 'enemy1sheet.png',  IMAGE_PATH + 'enemy1JSON.json');
     this.game.load.atlas('enemy_2',  IMAGE_PATH + 'enemy2sheet.png',  IMAGE_PATH + 'enemy2JSON.json');
