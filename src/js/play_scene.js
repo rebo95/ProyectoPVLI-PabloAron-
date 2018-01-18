@@ -1,7 +1,7 @@
 'use strict';
 
-var akey;
-var pauseKey;
+
+
 var nuestroJuego;
 var nuestraCamara;
 var creado = false;
@@ -55,6 +55,7 @@ var leftKey;
 var rightKey;
 var zKey;
 var xKey;
+var pauseKey;
 
 
 var arrayPosicionesEnemigos_1 = [];
@@ -191,8 +192,12 @@ var PlayScene =
   create: function () 
   {
 
-    playerLives = 3;
+    this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
+    playerLives = 3;
+    velMultiplier = 1;
+    points = 0;
+    
     nuestroJuego = this.game;
     nuestraCamara = this.game.camera;
     posXCameraIni = this.game.camera.x;
@@ -203,7 +208,7 @@ var PlayScene =
     
 
 
-    this.game.physics.startSystem(Phaser.Physics.ARCADE);
+
 
     //Map
     map = this.game.add.tilemap('level');
@@ -212,15 +217,8 @@ var PlayScene =
     back = map.createLayer('fondo');//son los nombres del tiled, como se llaman las capas del tiled creado
     level = map.createLayer('nivelado');
     
-    //colisiones = map.createLayer('collisions');
+ 
 
-    //map.setCollisionBetween(1, 1000, true, 'collisions');
-    //map.setCollisionByExclusion([0], true, colisiones);
-
-    //map.setCollision(708, true, level);
-
-    akey = this.game.input.keyboard.addKey(Phaser.Keyboard.A);    
-    pauseKey = this.game.input.keyboard.addKey(Phaser.Keyboard.P);
 
     //Input
     upKey = this.game.input.keyboard.addKey(Phaser.Keyboard.UP);
@@ -229,8 +227,9 @@ var PlayScene =
     rightKey = this.game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
     zKey = this.game.input.keyboard.addKey(Phaser.Keyboard.Z);
     xKey = this.game.input.keyboard.addKey(Phaser.Keyboard.X);
+    pauseKey = this.game.input.keyboard.addKey(Phaser.Keyboard.P);
 
-///////ESTO AQUÏ HAY QUE CAMKBIARLO; QUE SOLO REINICIE EN PAUSA CUANHDO NOS HEMOS pasadp el juego o hemos muert 
+//sistema de gestión lógica de pausa
     window.onkeydown = function() {
       this.pausaSprite;
 if(nuestroJuego.paused && !enJuego){
@@ -257,7 +256,9 @@ if(playerLives>=0){
 
       }
     }
-    //sound effects
+
+
+    //sound effects y música 
 
     music = this.game.add.audio('gameMusic');
    
@@ -269,23 +270,10 @@ if(playerLives>=0){
     powerUpSelected= this.game.add.audio('powerUpSelected');
     aceleron= this.game.add.audio('accelerate');
   
-    
-    //shootSound.onStop.add(soundStopped, this);
-    //explosion.onStop.add(soundStopped, this);
-    this.game.sound.setDecodedCallback([shootSound, explosion, music], start, this);
+    this.game.sound.setDecodedCallback([shootSound, explosion, music,turbosound,turboBlaster,powerUpTaken,powerUpSelected,aceleron], start, this);
 
 
-   /* //Player
-    var playerPos = new pos(100, this.game.world.centerY);
-    player = new Player(this.game, playerPos,'naves', 'front', playerVel, playerLives);
-    player.anchor.setTo(0.5, 0.5);
-    player.scale.setTo(3,3);
-    this.game.physics.arcade.enable(player);
-    this.game.world.addChild(player);
-    player.body.collideWorldBounds = true;
-    */
- 
-
+//sistema de armamentos primera nave
     weapons.push(new Weapon.SingleBullet(this.game));
     weapons.push(new Weapon.UpFront(this.game));
     weapons.push(new Weapon.FrontDown(this.game));
@@ -293,13 +281,14 @@ if(playerLives>=0){
     weapons.push(new Weapon.Laser(this.game));
     currentWeapon = 0;
 
+    //sistema de armamentos segunda nave 
     weapons2.push(new Weapon.SingleBullet(this.game));
     weapons2.push(new Weapon.UpFront(this.game));
     weapons2.push(new Weapon.FrontDown(this.game));
     weapons2.push(new Weapon.ThreeWay(this.game));
     weapons2.push(new Weapon.Laser(this.game));
 
-    
+    //elimina las balas en caso de que se salgan de los márgenes del mundo 
     for(var i = 0; i < weapons.length; i++)
     {
       weapons[i].outOfBoundsKill = true;
@@ -315,64 +304,7 @@ if(playerLives>=0){
     upgrades.push("?")  //?(shield)
 
 
-    //Enemy_1   
-    /*
-    var enemy_1Pos = new pos(this.game.world.width - 200, this.game.world.centerY - 100);
-    enemy_1 = new Enemy_1(this.game, enemy_1Pos, 'enemy_1', enemy_1Vel, enemy_1Lives);
-    this.game.physics.arcade.enable(enemy_1);
-    this.game.world.addChild(enemy_1);
-    enemy_1.anchor.setTo(0.5, 0.5);
-    enemy_1.scale.setTo(0.5, 0.5);
-
-    enemyArray.push(enemy_1);
-    */
-
-    //enemy_aaron
-    /*
-    var enemy_aaronPos = new pos(this.game.world.centerX, this.game.world.centerY);
-    enemy_aarom = new Enemy_Aaron(this.game, enemy_aaronPos,'ship', enemy_1Vel, enemy_1Lives);
-    enemy_aarom.anchor.setTo(0.5, 0.5);
-    enemy_aarom.scale.setTo(0.5, 0.5);
-    this.game.physics.arcade.enable(enemy_aarom);
-    this.game.world.addChild(enemy_aarom);*/
-
-
-//para que colisione correctamente al impactar contra los elementos es necesario que 
-// vamos a poner un enemy2
-/*
-    //Enemy_2 
-    var enemy_2Pos = new pos(this.game.world.width, this.game.world.centerY);
-    enemy_2 = new Enemy_2(this.game, enemy_2Pos, 'enemy_2', enemy_2Vel, enemy_2Lives);
-    enemy_2.anchor.setTo(0.5, 0.5);
-    enemy_2.scale.setTo(0.1, 0.1);
-    this.game.physics.arcade.enable(enemy_2);
-    this.game.world.addChild(enemy_2);
-
-
-    //Enemy_3 
-    var enemy_3Pos = new pos(this.game.world.width, this.game.world.centerY - 60);
-    enemy_3 = new Enemy_3(this.game, enemy_3Pos, 'enemy_3', enemy_3Vel, enemy_3Lives, 80);
-    enemy_3.anchor.setTo(0.5, 0.5);
-    enemy_3.scale.setTo(0.5, 0.5);
-    this.game.physics.arcade.enable(enemy_3);
-    this.game.world.addChild(enemy_3);
-
-     //Enemy_4 
-     var enemy_4Pos = new pos(this.game.world.width, this.game.world.centerY + 60);
-     enemy_4 = new Enemy_4(this.game, enemy_4Pos, 'enemy_4', enemy_4Vel, enemy_4Lives);
-     enemy_4.anchor.setTo(0.5, 0.5);
-     enemy_4.scale.setTo(0.5, 0.5);
-     this.game.physics.arcade.enable(enemy_4);
-     this.game.world.addChild(enemy_4);
-
-    */
-    //el target debería heredar de sprite, de la clase movable, y no directamente de sprite.
-    //boton = this.game.add.button(this.game.world.centerX, this.game.world.centerY + 50, 'blackRectangle', actionOnClick, this, 2,1,0);
-    //boton.anchor.setTo(0.5,0.5);
-    //boton.scale.setTo(1, 0.5);
-
-
-
+//creamos un target para el sistema de movimiento de cámara 
     target = this.game.add.sprite(
     this.game.world.width, this.game.world.centerY);
     target.anchor.setTo(0.5, 0.5);
@@ -380,6 +312,8 @@ if(playerLives>=0){
     target.x = 0;
 
     
+    //creación de los elementos del juego mediante sistema de recolección de posiciones desde el tiled y haciendo uso de los respectivos métodos auxiliares 
+    //de spawn y creación 
 
   //player
   naveEspacial = this.game.add.physicsGroup();
@@ -395,6 +329,8 @@ if(playerLives>=0){
 
 });    
 
+
+//posiciones puestas desde el tiled para la lógica de la cinemática final 
 end = this.game.add.physicsGroup();
 map.createFromObjects('objetos', 'end', '', 1327, true, false, end);
 end.forEach(function(integrante){
@@ -483,18 +419,14 @@ createPowerUp(integranteP.x, integranteP.y)
 });
 
 
+//creación de los elementos del HUD
+
 var posBot3 = new pos(this.game.camera.x + this.game.camera.width /2 , 50);
 boton3 = new HUD(this.game, posBot3, 'blackRectangle', target_vel);
 boton3.anchor.setTo(0.5,0.5);
 boton3.scale.setTo(1.2, 0.3);
 this.game.world.addChild(boton3);
 
-
-
-//var boton2 = this.game.add.sprite(this.game.camera.x + this.game.camera.width /2 , this.game.camera.y + 400, 'enemy_4');
-//boton2.anchor.setTo(0.5,0.5);
-//boton2.scale.setTo(0.5, 0.5);
-points = 0;
 
 txt = this.game.add.text(boton3.x - boton3.width/2 ,boton3.y + 5, points , {font: "20px Italic", fill:"#ffff", align: "center"});
 txt.anchor.setTo(0,0.5);
@@ -546,59 +478,11 @@ shieldSprite.frameName = 'blueshield';
 
 spriteGroup = this.game.add.group();  
 spriteGroup.addMultiple([boton3, txt, speedSprite, missileSprite, doubleSprite, laserSprite, optionSprite, shieldSprite]);
-
 grupoVictoria = this.game.add.group();  
-/*
-
-powerup = this.game.add.sprite(350, 300, 'power_up')
-powerup.anchor.setTo(0.5, 0.5);
-powerup.scale.setTo(3,3);
-this.game.physics.arcade.enable(powerup);
-this.game.world.addChild(powerup);
-powerup.body.collideWorldBounds = true;
-
-arrayP.push(powerup);
-
-powerup2 = this.game.add.sprite(500,300, 'power_up')
-powerup2.anchor.setTo(0.5, 0.5);
-powerup2.scale.setTo(3,3);
-this.game.physics.arcade.enable(powerup2);
-this.game.world.addChild(powerup2);
-powerup2.body.collideWorldBounds = true;
-
-arrayP.push(powerup2);
-
-powerup3 = this.game.add.sprite(650, 300, 'power_up')
-powerup3.anchor.setTo(0.5, 0.5);
-powerup3.scale.setTo(3,3);
-this.game.physics.arcade.enable(powerup3);
-this.game.world.addChild(powerup3);
-powerup3.body.collideWorldBounds = true;
-
-arrayP.push(powerup3)
-
-powerup4 = this.game.add.sprite(800, 300, 'power_up')
-powerup4.anchor.setTo(0.5, 0.5);
-powerup4.scale.setTo(3,3);
-this.game.physics.arcade.enable(powerup4);
-this.game.world.addChild(powerup4);
-powerup4.body.collideWorldBounds = true;
-
-arrayP.push(powerup4)
-
-powerup5 = this.game.add.sprite(950, 300, 'power_up')
-powerup5.anchor.setTo(0.5, 0.5);
-powerup5.scale.setTo(3,3);
-this.game.physics.arcade.enable(powerup5);
-this.game.world.addChild(powerup5);
-powerup5.body.collideWorldBounds = true;
-
-arrayP.push(powerup5)
-*/
-
-velMultiplier = 1;
 
 level.resizeWorld();
+
+
   },
 
 
@@ -606,80 +490,47 @@ level.resizeWorld();
   update: function ()
   {
 
+    this.collisionDetected = false;
+    this.currentEnemy = 0;
+
+    //condiciones victoria derrota 
+
     gameOver();
-    if(akey.isDown)
-    {
-    }
 
     if(this.game.camera.x>= endX)
     win();
 
-
+//sistema desplazamiento de la cámara y condiciones 
     if(!(target.x < this.game.world.width - this.game.camera.width))
     target_vel = 0;
     target.x +=target_vel;
 
+    nuestraCamara.x = target.x;
+
+
+
+    if(player.x<target.x)
+    player.x = target.x;
+
+    //nos permite que el player no sea engullido por la cámara 
+
+//sistema de HUD y sprites 
     spriteGroup.x = this.game.camera.x;
-
-
     txt.setText("  Score : " + points + "        Lifes : " + playerLives);
-    
+    upgradesSprites();
 
-
-    //colisiones.debug = true;
-
-
+//sistema de generación de enemigos en función de su carga desde el tilesheet
     spawnEnemy(arrayX_Enemy_1, arrayPosicionesEnemigos_1, 'enemy_1', enemy_1Vel, enemy_1Lives, 1);
     spawnEnemy(arrayX_Enemy_2, arrayPosicionesEnemigos_2, 'enemy_2', enemy_2Vel, enemy_2Lives, 2);
     spawnEnemy(arrayX_Enemy_3, arrayPosicionesEnemigos_3, 'enemy_3', enemy_3Vel, enemy_3Lives, 3);
     spawnEnemy(arrayX_Enemy_4, arrayPosicionesEnemigos_4, 'enemy_4', enemy_4Vel, enemy_4Lives, 4);
     spawnEnemy(arrayX_Enemy_5, arrayPosicionesEnemigos_5, 'roca', 0, 0, 5);
 
-    upgradesSprites();
-
-    /*
-    for(var j = 0; j<arrayPosicionesEnemigos_1.length; j++ ){
-      if(canICreateMyself(arrayX_Enemy_1[j])){
-        createEnemy_1(nuestroJuego, arrayPosicionesEnemigos_1[j],'enemy_1',enemy_1Vel,enemy_1Lives);
-      }
-    }
-
-    for(var j = 0; j<arrayPosicionesEnemigos_1.length; j++ ){
-      if(canICreateMyself(arrayX_Enemy_1[j])){
-        arrayX_Enemy_1.splice(j,1);
-        arrayPosicionesEnemigos_1.splice(j,1);
-      }
-    }
-
-    for(var j = 0; j<arrayPosicionesEnemigos_2.length; j++ ){
-      if(canICreateMyself(arrayX_Enemy_2[j])){
-        createEnemy_2(nuestroJuego, arrayPosicionesEnemigos_2[j],'enemy_2',enemy_2Vel,enemy_2Lives);
-      }
-    }
-
-    for(var j = 0; j<arrayPosicionesEnemigos_2.length; j++ ){
-      if(canICreateMyself(arrayX_Enemy_2[j])){
-        arrayX_Enemy_2.splice(j,1);
-        arrayPosicionesEnemigos_2.splice(j,1);
-      }
-    }
-
-*/
-
+//sistema de eliminación de enemigos con nuestras balas y las de la habilidad nave amiga
     for(var i = 0; i<enemyArray.length; i++ ){
         this.game.physics.arcade.overlap(weapons[currentWeapon], enemyArray[i], collisionHandler, null, this);
         this.game.physics.arcade.overlap(weapons2[currentWeapon], enemyArray[i], collisionHandler, null, this);
-        //this.game.physics.arcade.overlap(player, enemyArray[i], collisionHandler, null, this);
     }
-
-
-    //this.game.physics.arcade.overlap(weapons[currentWeapon], enemy_1, collisionHandler, null, this);
-    //this.game.physics.arcade.overlap(weapons[currentWeapon], enemy_2, collisionHandler, null, this);s
-    //this.game.physics.arcade.overlap(weapons[currentWeapon], enemy_3, collisionHandler, null, this);
-    //this.game.physics.arcade.overlap(weapons[currentWeapon], enemy_4, collisionHandler, null, this);
-    this.collisionDetected = false;
-    this.currentEnemy = 0;
-
 
     while(!this.collisionDetected && this.currentEnemy < enemyArray.length){
       if(this.game.physics.arcade.overlap(player, enemyArray[this.currentEnemy])){
@@ -689,45 +540,38 @@ level.resizeWorld();
       this.currentEnemy ++;
     }
 
+//sistema de colisiones con o sin escudo 
     if(this.collisionDetected)
     {
       if(shield)
       {
         for(var i = 0; i<enemyArray.length; i++ ){
-          this.game.physics.arcade.overlap(weapons[currentWeapon], enemyArray[i], collisionHandler, null, this); //object2, object 1)
-          this.game.physics.arcade.overlap(weapons2[currentWeapon], enemyArray[i], collisionHandler, null, this);
+
           if(this.game.physics.arcade.overlap(player, enemyArray[i]))
           {
 
             explode(enemyArray[i].x,enemyArray[i].y);
             enemyArray[i].kill();
-            collisionWithShield();
+            collisionWithShield();// metodo que rige la lógica del escudo en caso de colisionar con los enemigos 
           }
 
       }
-        console.log(shield_resistance);
       }
       else
       {
 
         for(var i = 0; i<enemyArray.length; i++ ){
-          this.game.physics.arcade.overlap(weapons[currentWeapon], enemyArray[i], collisionHandler, null, this);
-          this.game.physics.arcade.overlap(weapons2[currentWeapon], enemyArray[i], collisionHandler, null, this);
+
           this.game.physics.arcade.overlap(player, enemyArray[i], collisionHandler, null, this);
       }
-  
-        //this.game.physics.arcade.overlap(player, enemy_1, collisionHandler, null, this);
-        //this.game.physics.arcade.overlap(player, enemy_2, collisionHandler, null, this);
-        //this.game.physics.arcade.overlap(player, enemy_3, collisionHandler, null, this);
-        //this.game.physics.arcade.overlap(player, enemy_4, collisionHandler, null, this);
       }
     }
 
 for(var z = 0; z<arrayP.length; z++)
     this.game.physics.arcade.overlap(player, arrayP[z], collisionHandler2, null, this);
 
+    //gestion del sprite del escudo en caso de activarlo 
     if(shield){
-      
       if(!shieldCreated){
       armor = this.game.add.sprite(player.x + 20, player.y, 'escudo');
       armor.anchor.setTo(0.5,0.5);
@@ -735,80 +579,18 @@ for(var z = 0; z<arrayP.length; z++)
       armor.frameName = 'shield1';
       shieldCreated = true;
       }
-
       armor.x = player.x + player.width/2 + 20 ;
       armor.y = player.y;
     }
     
-/*
-    if(this.game.physics.arcade.overlap(player, powerup))
-    {
-      collisionHandler2(powerup, player);
-      currentUpgrade++;
-      if(currentUpgrade > upgrades.length)
-      {
-        currentUpgrade = 1;
-      }
-    }
-
-    if(this.game.physics.arcade.overlap(player, powerup2))
-    {
-      collisionHandler2(powerup2, player);
-      currentUpgrade++;
-      if(currentUpgrade > upgrades.length)
-      {
-        currentUpgrade = 1;
-      }
-    }
-    if(this.game.physics.arcade.overlap(player, powerup3))
-    {
-      collisionHandler2(powerup3, player);
-      currentUpgrade++;
-      if(currentUpgrade > upgrades.length)
-      {
-        currentUpgrade = 1;
-      }
-    }
-    if(this.game.physics.arcade.overlap(player, powerup4))
-    {
-      collisionHandler2(powerup4, player);
-      currentUpgrade++;
-      if(currentUpgrade > upgrades.length)
-      {
-        currentUpgrade = 1;
-      }
-    }
-    if(this.game.physics.arcade.overlap(player, powerup5))
-    {
-      collisionHandler2(powerup5, player);
-      currentUpgrade++;
-      if(currentUpgrade > upgrades.length)
-      {
-        currentUpgrade = 1;
-      }
-    }
-*/
-
-    //this.game.camera.x = target.x;
-
-
-    nuestraCamara.x = target.x;
-
-    if(player.x<target.x)
-    player.x = target.x;
-
-   // for(var i = 0; i<enemyArray.length; i++ )
-    //{
-     // this.game.debug.body(enemyArray[i]);
-    //}
-    
-
-    //this.game.debug.body(player);
   },
 
 };   
-//////////////////////////////
+////////////////////////////////////////////////
 //Funciones Auxiliares independientes de la jerarquía
+///////////////////////////////////////////////////
+
+
 function collisionWithShield(){//aquí se presenta el sistema de colisionado con el escudo de la nave
   shield_resistance--;
   if(shield_resistance == 3)
@@ -829,16 +611,37 @@ function collisionWithShield(){//aquí se presenta el sistema de colisionado con
   //dentro iría la lógica de muerte del escudo , si tenemos escudo activo pasará por este collision handler , si no por el original 
 }
 
+//sistema de colisiones 2 para los upgrades
 function collisionHandler2(obj1, obj2){
   obj2.kill();
   currentUpgrade++;
   powerUpTaken.play();
-  if(currentUpgrade > upgrades.length)
+  if(currentUpgrade >= upgrades.length)
   {
     currentUpgrade = 1;
+
+    if(!shieldactivo)
+    shieldSprite.frameName = 'blueshield';
+  
+    if(!optionactivo)
+    optionSprite.frameName = 'blueoption';
+  
+    if(!laseractivo)
+    laserSprite.frameName = 'bluelaser';
+  
+    if(!doubleactivo)
+    doubleSprite.frameName = 'bluedouble';
+  
+    if(!missileactivo)
+    missileSprite.frameName = 'bluemissile';
+  
+    if(!speedactivo)
+    speedSprite.frameName = 'bluespeed';
+
   }
 }
 
+//sistema de colisiones principal-player enemigos enemigos-balas
 function collisionHandler(obj1, obj2)
 {
 
@@ -868,15 +671,15 @@ else {  explosion.play();
     target.x -= 300;
     else target.x = 0;
     var playerPos = new pos(target.x + 50, posYPlayerIni);
-    create_player(this.game,playerPos, 'naves', playerVel, playerLives);
+    create_player(this.game, playerPos, 'naves', playerVel, playerLives);
+    
+    if(secondPlayerAlive){
+      player2.destroy();
+      optionSprite.frameName = 'blueoption';
+      doubleactivo = false;
+
+    }
   }
-  // nos permite cohibir el disparo en caso de que se destruya nuestra 
-
- // if(obj2 = Enemy){// para saber si un determinado elemento es de tipo alguno de los padres de la herencia se hace con el comparador "="
- //   explode();
-
-    // este método nos gestiona las colisiones, aquí tendremos que lanzar los métodos pertinentas para el caso de que se produzcan estas colisiones
-//}
 }
 
 function start(){
@@ -902,7 +705,7 @@ else return false;
 
 function upgradesSprites(){
 
-if(currentUpgrade === 0){
+if(currentUpgrade === 0 ){
   if(!shieldactivo)
   shieldSprite.frameName = 'blueshield';
 
@@ -966,6 +769,8 @@ if(xKey.isDown)
 }
 }
 
+//función que sigue la lógica de spawn establecida y que genera los enemigos en función del tipo 
+
 function spawnEnemy(enemy_x_array, enemy_pos_array, enemySpriteName, enemyVel,enemyLives, enemy_Type){ 
 
   for(var j = 0;  j <enemy_pos_array.length; j++ ){
@@ -993,7 +798,6 @@ function spawnEnemy(enemy_x_array, enemy_pos_array, enemySpriteName, enemyVel,en
 }
 
 function soundStopped(sound){
-
 }
 
 
@@ -1025,8 +829,8 @@ function movimiento(objeto, velocidad){
   objeto.x +=1;
 }
 
-//función que pawnea un enemigo
 
+//funciones de creación de elementos
 function createEnemy_1(juego, posicion, spriteName, velocidad, vidas){
   var ene = new Enemy_1(juego, posicion, spriteName, velocidad, vidas);
   ene.anchor.setTo(0.5, 0.5);
@@ -1116,6 +920,8 @@ function createPowerUp(posX, posY){
   arrayP.push(powerUp)
 }
 
+//crea segundo jugador
+
 function createSecondPlayer(vidas){
   vidas = 3;
   var player2Pos = new pos(player.x - 50, player.y + 50);
@@ -1130,6 +936,7 @@ function createSecondPlayer(vidas){
   
 }
 
+//sistema de organización de ls upgrades 
 function upgradesHandler(n)
 {
   //en este momento es en el que tenemos que poner el sprite a naranja
@@ -1152,7 +959,7 @@ function upgradesHandler(n)
   else if(n == 5)
   {
     createSecondPlayer();
-    //Hay que llamar a la nave auxiliar
+
   }
   else if(n == 6)
   {
@@ -1162,6 +969,8 @@ function upgradesHandler(n)
 
 }
 
+
+//sistema y hud de muerte 
 function gameOver(){
 if(playerLives === 0){
   var gameEndSprite = nuestroJuego.add.sprite( nuestroJuego.camera.x + nuestroJuego.camera.width/2, nuestroJuego.camera.y + nuestroJuego.camera.height/2, 'ended');
@@ -1183,9 +992,9 @@ if(playerLives === 0){
   enjuego = false ;
   nuestroJuego.paused = true;
 }
-
 }
 
+//logica y hud de victoria y cinemática final 
 
 function win(){
 
@@ -1238,7 +1047,11 @@ function win(){
 }
 
 
-//Objetos móviles
+
+
+
+
+//herencia de objetos 
 function Movable(game, position, sprite, velocity)
 {
   Phaser.Sprite.apply(this, [game, position._x, position._y, sprite]);
@@ -1293,9 +1106,6 @@ Player.prototype.constructor = Player;
 // añade al prototipo de player la función Movement
 Player.prototype.Movement = function()
 {
-if(akey.isDown){
-  //createSecondPlayer();
-}
 if(lanzacinematica){
 this.body.x += target_vel + 20;
 if(!secondignicion){
@@ -1353,6 +1163,7 @@ Player.prototype.update = function()
   this.Movement();
 }
 
+//segunda nave, nave amiga
 function Player2(game, position, sprite, velocity, lives, father)
 {
   Destroyable.apply(this, [game, position, sprite, velocity, lives]);
@@ -1362,14 +1173,11 @@ function Player2(game, position, sprite, velocity, lives, father)
 Player2.prototype = Object.create(Destroyable.prototype);
 Player2.prototype.constructor = Player2;
 
-//Métodos de la clase Player
-//Permite al player moverse con los cursores
-// añade al prototipo de player la función Movement
+
 Player2.prototype.Movement = function()
 {
   
     this.body.x = this._father.body.x -  30;
-
     this.body.y =  this._father.body.y + 50 ;
 
   if (upKey.isDown)
@@ -1397,11 +1205,7 @@ Player2.prototype.update = function()
 }
 
 
-
-
-
-
-//NUEVAS CLASES BALAS MEJORADAS
+//NUEVAS CLASES BALAS MEJORADAS sistema de disparo 
 function Bullet (game, sprite)
 {
   Phaser.Sprite.call(this, game, 0, 0, sprite);
@@ -1637,23 +1441,6 @@ Enemy.prototype.move_along_enemy = function(vel)
 
 
 
-/*
-function Enemy_Aaron(game, position, sprite, velocity, lives){
-  Enemy.apply(this, [game, position, sprite, velocity, lives]); // esto es : hereda de el objeto enemigo.
-
-}
- Enemy_Aaron.prototype = Object.create(Enemy.prototype);
- Enemy_Aaron.prototype.constructor = Enemy_Aaron;
-
- Enemy_Aaron.prototype.Movement = function(vel){
-   this.move_along_enemy(vel);
- }
-
- Enemy_Aaron.prototype.update = function(){
-   this.Movement(enemy_1Vel);
- }
-
-*/
  
 function Enemy_1(game, position, sprite, velocity, lives)
 {

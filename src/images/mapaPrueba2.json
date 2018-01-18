@@ -214,8 +214,8 @@
                  "type":"",
                  "visible":true,
                  "width":16,
-                 "x":2122.66666666667,
-                 "y":428
+                 "x":2785.33333333334,
+                 "y":554.666666666667
                 }, 
                 {
                  "gid":2583,
@@ -250,8 +250,44 @@
                  "type":"",
                  "visible":true,
                  "width":16,
-                 "x":2400.66666666667,
-                 "y":121.666666666667
+                 "x":1792.66666666667,
+                 "y":176.333333333334
+                }, 
+                {
+                 "gid":980,
+                 "height":16,
+                 "id":450,
+                 "name":"obstacle",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":2136,
+                 "y":425.333333333333
+                }, 
+                {
+                 "gid":2583,
+                 "height":16,
+                 "id":451,
+                 "name":"pow",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":2401.33333333333,
+                 "y":116
+                }, 
+                {
+                 "gid":2583,
+                 "height":16,
+                 "id":452,
+                 "name":"pow",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":2253.33333333333,
+                 "y":192
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -259,7 +295,7 @@
          "x":0,
          "y":0
         }],
- "nextobjectid":450,
+ "nextobjectid":453,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.0.3",

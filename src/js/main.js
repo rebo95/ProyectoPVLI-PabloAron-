@@ -80,36 +80,25 @@ var PreloaderScene = {
     this.game.load.atlas('enemy_2',  IMAGE_PATH + 'enemy2sheet.png',  IMAGE_PATH + 'enemy2JSON.json');
     this.game.load.atlas('enemy_3',  IMAGE_PATH + 'enemy3sheet.png',  IMAGE_PATH + 'enemy3JSON.json');
     this.game.load.atlas('enemy_4',  IMAGE_PATH + 'enemy4sheet.png',  IMAGE_PATH + 'enemy4JSON.json');
-
     this.game.load.atlas('pausaSprite',  IMAGE_PATH + 'pausasheet.png',  IMAGE_PATH + 'pausaJSON.json');
-
+    
     this.game.load.image('roca', IMAGE_PATH + 'Enemy_4_Respawn.png');
-
     this.game.load.image('power_up', IMAGE_PATH + 'PowerUp_1.png');
-
     this.game.load.image('secondShip', IMAGE_PATH + 'Nave_Exp_3.png');
-    
     this.game.load.image('controlsPNG', IMAGE_PATH + 'controles.png');
-    //Cargas de los enemigos
-    //this.game.load.image('enemy_1', IMAGE_PATH + 'meteorite.png');
-    //this.game.load.image('enemy_2', IMAGE_PATH + 'n.png');
-    //this.game.load.image('enemy_3', IMAGE_PATH + 'futurama.png');
-    //this.game.load.image('enemy_4', IMAGE_PATH + 'Power_Up.png');
-    
-    //hudShip
+
+
     //Cargas de las balas
     this.game.load.image('bullet_1', IMAGE_PATH + 'Double_1.png');
     this.game.load.image('laser', IMAGE_PATH + 'laser.png');
 
 
     //cargas necesarias para el tiled y el mapa
-    //this.load.tilemap('level', './images/nivelGdiameter.json', null, Phaser.Tilemap.TILED_JSON);
     this.load.tilemap('level', './images/mapaPrueba2.json', null, Phaser.Tilemap.TILED_JSON);
     this.game.load.image('tilespng', 'images/tiles.png');
   },
 
   create: function () {
-    //this.game.state.start('play');
     this.game.state.start('menu');
   }
 };
