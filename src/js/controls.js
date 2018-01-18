@@ -6,7 +6,8 @@ var arribaTecla;
 var mouseButton;
 
 var fondo;
-var menuSprite ;
+var menuSprite;
+
 
 var controlsBoton;
 var controlsSprite;
@@ -36,7 +37,10 @@ var Controls2 = {
             logo.anchor.setTo(0.5,0.5);
             logo.scale.setTo(0.10, 0.10);
         
-        
+            this.controls = this.game.add.sprite(this.game.world.centerX, this.game.world.centerY - 25, 'controlsPNG');
+            this.controls.anchor.setTo(0.5,0.5);
+            this.controls.scale.setTo(1.2, 1.2);
+
             var title2 = this.game.add.sprite(this.game.world.centerX, 80, 'title2');
             title2.anchor.setTo(0.5,0.5);
             title2.scale.setTo(0.5,0.5);

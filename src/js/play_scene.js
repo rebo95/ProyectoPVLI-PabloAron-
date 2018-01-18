@@ -53,7 +53,7 @@ var upKey;
 var downKey;
 var leftKey;
 var rightKey;
-var spacebarKey;
+var zKey;
 var xKey;
 
 
@@ -100,6 +100,8 @@ var shield_resistance = 4;
 var weapons = [];
 var currentWeapon = 0;
 
+var weapons2 = [];
+
 var shieldactivo = false;
 var optionactivo = false;
 var laseractivo = false;
@@ -133,7 +135,7 @@ var playerAlive = true;
 
 var target;
 var target2;
-var target_vel = 5;
+var target_vel = 3;
 
 //Enemigo que avanza un poco y retrocede en diagonal
 var enemy_1;
@@ -225,7 +227,7 @@ var PlayScene =
     downKey = this.game.input.keyboard.addKey(Phaser.Keyboard.DOWN);
     leftKey = this.game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
     rightKey = this.game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
-    spacebarKey = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+    zKey = this.game.input.keyboard.addKey(Phaser.Keyboard.Z);
     xKey = this.game.input.keyboard.addKey(Phaser.Keyboard.X);
 
 ///////ESTO AQUÏ HAY QUE CAMKBIARLO; QUE SOLO REINICIE EN PAUSA CUANHDO NOS HEMOS pasadp el juego o hemos muert 
@@ -290,6 +292,12 @@ if(playerLives>=0){
     weapons.push(new Weapon.ThreeWay(this.game));
     weapons.push(new Weapon.Laser(this.game));
     currentWeapon = 0;
+
+    weapons2.push(new Weapon.SingleBullet(this.game));
+    weapons2.push(new Weapon.UpFront(this.game));
+    weapons2.push(new Weapon.FrontDown(this.game));
+    weapons2.push(new Weapon.ThreeWay(this.game));
+    weapons2.push(new Weapon.Laser(this.game));
 
     
     for(var i = 0; i < weapons.length; i++)
@@ -660,6 +668,7 @@ level.resizeWorld();
 
     for(var i = 0; i<enemyArray.length; i++ ){
         this.game.physics.arcade.overlap(weapons[currentWeapon], enemyArray[i], collisionHandler, null, this);
+        this.game.physics.arcade.overlap(weapons2[currentWeapon], enemyArray[i], collisionHandler, null, this);
         //this.game.physics.arcade.overlap(player, enemyArray[i], collisionHandler, null, this);
     }
 
@@ -686,6 +695,7 @@ level.resizeWorld();
       {
         for(var i = 0; i<enemyArray.length; i++ ){
           this.game.physics.arcade.overlap(weapons[currentWeapon], enemyArray[i], collisionHandler, null, this); //object2, object 1)
+          this.game.physics.arcade.overlap(weapons2[currentWeapon], enemyArray[i], collisionHandler, null, this);
           if(this.game.physics.arcade.overlap(player, enemyArray[i]))
           {
 
@@ -702,6 +712,7 @@ level.resizeWorld();
 
         for(var i = 0; i<enemyArray.length; i++ ){
           this.game.physics.arcade.overlap(weapons[currentWeapon], enemyArray[i], collisionHandler, null, this);
+          this.game.physics.arcade.overlap(weapons2[currentWeapon], enemyArray[i], collisionHandler, null, this);
           this.game.physics.arcade.overlap(player, enemyArray[i], collisionHandler, null, this);
       }
   
@@ -1108,9 +1119,9 @@ function createPowerUp(posX, posY){
 function createSecondPlayer(vidas){
   vidas = 3;
   var player2Pos = new pos(player.x - 50, player.y + 50);
-  player2 = new Player2(nuestroJuego, player2Pos,'naves', playerVel, vidas,player);
+  player2 = new Player2(nuestroJuego, player2Pos,'secondShip', playerVel, vidas,player);
   player2.anchor.setTo(0.5, 0.5);
-  player2.scale.setTo(3,3);
+  player2.scale.setTo(1,1);
   nuestroJuego.physics.arcade.enable(player2);
   nuestroJuego.world.addChild(player2);
   player2.body.collideWorldBounds = true;
@@ -1323,7 +1334,7 @@ this.body.x += target_vel;
     player.frameName = 'front';
   }
 
-  if(spacebarKey.isDown)
+  if(zKey.isDown)
   {
     weapons[currentWeapon].fire(player);
     //this.game.paused = true;
@@ -1357,7 +1368,7 @@ Player2.prototype.constructor = Player2;
 Player2.prototype.Movement = function()
 {
   
-    this.body.x = this._father.body.x -  50;
+    this.body.x = this._father.body.x -  30;
 
     this.body.y =  this._father.body.y + 50 ;
 
@@ -1372,9 +1383,9 @@ Player2.prototype.Movement = function()
     this._father.frameName = 'front';
   }
 
-  if(spacebarKey.isDown)
+  if(zKey.isDown)
   {
-    weapons[0].fire(player2);
+    weapons2[currentWeapon].fire(player2);
   }
 
 
@@ -1396,6 +1407,7 @@ function Bullet (game, sprite)
   Phaser.Sprite.call(this, game, 0, 0, sprite);
   this.anchor.set(0.5);
   
+  
   this.checkWorldBounds = true;
   this.outOfBoundsKill = true;
   this.exists = false;
@@ -1412,7 +1424,7 @@ Bullet.prototype.fire = function (x, y, angle, speed, gx, gy)
   gy = gy || 0;
   
    this.reset(x, y);  //colocamos el objeto en la x e y introducidas
-   this.scale.set(1);
+   this.scale.setTo(1.5,1.5);
   
    this.game.physics.arcade.velocityFromAngle(angle, speed, this.body.velocity);
   

@@ -1,7 +1,6 @@
 'use strict';
 
 var PlayScene = require('./play_scene.js');
-var GameO = require('./GameOver.js')
 var Controls = require('./controls.js');
 var Credits2 = require('./credits.js');
 var MainMenu = require('./initialMenu.js');
@@ -84,10 +83,13 @@ var PreloaderScene = {
 
     this.game.load.atlas('pausaSprite',  IMAGE_PATH + 'pausasheet.png',  IMAGE_PATH + 'pausaJSON.json');
 
-    this.game.load.image('roca', IMAGE_PATH + 'Enemy_4_Respawn.png')
+    this.game.load.image('roca', IMAGE_PATH + 'Enemy_4_Respawn.png');
 
-    this.game.load.image('power_up', IMAGE_PATH + 'PowerUp_1.png')
+    this.game.load.image('power_up', IMAGE_PATH + 'PowerUp_1.png');
 
+    this.game.load.image('secondShip', IMAGE_PATH + 'Nave_Exp_3.png');
+    
+    this.game.load.image('controlsPNG', IMAGE_PATH + 'controles.png');
     //Cargas de los enemigos
     //this.game.load.image('enemy_1', IMAGE_PATH + 'meteorite.png');
     //this.game.load.image('enemy_2', IMAGE_PATH + 'n.png');
@@ -123,7 +125,6 @@ window.onload = function () {
   game.state.add('credits2', Credits2);
   game.state.add('menu', MainMenu);
   game.state.add('controls2', Controls); 
-  game.state.add('fin', GameO); 
 
 
   
