@@ -31,7 +31,7 @@ var gameVictoriaSprite;
 var puntsSpriteVictoria; 
 var textopuntsVictoria;
 var pressSpriteVictoria;
-
+var vidasSprites;
 var impreso;
 var impreso2;
 
@@ -92,7 +92,7 @@ var playerArray = [];
 //Player
 var player;
 var playerVel = 5;
-var playerLives;
+var playerLives = 3;
 var shield = false;
 var shieldCreated = false;
 var armor;
@@ -117,6 +117,7 @@ var laserSprite;
 var doubleSprite;
 var missileSprite;  
 var speedSprite;
+
 
 
 //PowerUps
@@ -194,7 +195,7 @@ var PlayScene =
 
     this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
-    playerLives = 3;
+    
     velMultiplier = 1;
     points = 0;
     
@@ -464,20 +465,29 @@ laserSprite.frameName = 'bluelaser';
 optionSprite  = this.game.add.sprite(this.game.camera.x + this.game.camera.width /2 ,  this.game.camera.y + this.game.camera.height /2, 'habilidades' );
 optionSprite.anchor.setTo(0, 0);
 optionSprite.scale.setTo(1.8, 1.8);
-optionSprite.x = boton3.x-boton3.width/2 + 4* speedSprite.width;;
+optionSprite.x = boton3.x-boton3.width/2 + 4* speedSprite.width;
 optionSprite.y = boton3.y- boton3.height/2;
 optionSprite.frameName = 'blueoption';
 
 shieldSprite  = this.game.add.sprite(this.game.camera.x + this.game.camera.width /2 ,  this.game.camera.y + this.game.camera.height /2, 'habilidades' );
 shieldSprite.anchor.setTo(0, 0);
 shieldSprite.scale.setTo(1.8, 1.8);
-shieldSprite.x = boton3.x-boton3.width/2 + 5 * speedSprite.width;;
+shieldSprite.x = boton3.x-boton3.width/2 + 5 * speedSprite.width;
 shieldSprite.y = boton3.y- boton3.height/2;
 shieldSprite.frameName = 'blueshield';
 
 
+vidasSprites = this.game.add.sprite(boton3.x + boton3.width/2, txt.y, 'vidasSprite' );
+vidasSprites.anchor.setTo(0.5,0.5);
+vidasSprites.scale.setTo(1.8, 1.8);
+vidasSprites.x = boton3.x + 40;
+vidasSprites.y = txt.y - 2;
+vidasSprites.frameName = '1vida';
+
+
+
 spriteGroup = this.game.add.group();  
-spriteGroup.addMultiple([boton3, txt, speedSprite, missileSprite, doubleSprite, laserSprite, optionSprite, shieldSprite]);
+spriteGroup.addMultiple([boton3, txt, speedSprite, missileSprite, doubleSprite, laserSprite, optionSprite, shieldSprite, vidasSprites]);
 grupoVictoria = this.game.add.group();  
 
 level.resizeWorld();
@@ -495,7 +505,7 @@ level.resizeWorld();
 
     //condiciones victoria derrota 
 
-    gameOver();
+    
 
     if(this.game.camera.x>= endX)
     win();
@@ -582,7 +592,9 @@ for(var z = 0; z<arrayP.length; z++)
       armor.x = player.x + player.width/2 + 20 ;
       armor.y = player.y;
     }
-    
+
+    txt.setText("  Score : " + points + "        Lifes : " + playerLives);
+    gameOver();
   },
 
 };   
@@ -667,11 +679,14 @@ else {  explosion.play();
     playerLives --;
     playerArray.shift();
 
+    upgradesSprites();
+
     if(target.x >= 400)
     target.x -= 300;
     else target.x = 0;
     var playerPos = new pos(target.x + 50, posYPlayerIni);
     create_player(this.game, playerPos, 'naves', playerVel, playerLives);
+
     
     if(secondPlayerAlive){
       player2.destroy();
@@ -704,6 +719,21 @@ else return false;
 
 
 function upgradesSprites(){
+
+  if(playerLives === 3){
+    vidasSprites.frameName ='3vidas';
+  }
+  else if (playerLives === 2){
+    vidasSprites.frameName ='2vidas';
+  }
+
+  else if(playerLives === 1){
+    vidasSprites.frameName = '1vida';
+  }
+  else if (playerLives === 0){
+    vidasSprites.destroy();
+  }
+
 
 if(currentUpgrade === 0 ){
   if(!shieldactivo)
@@ -972,7 +1002,8 @@ function upgradesHandler(n)
 
 //sistema y hud de muerte 
 function gameOver(){
-if(playerLives === 0){
+if(playerLives <= 0){
+
   var gameEndSprite = nuestroJuego.add.sprite( nuestroJuego.camera.x + nuestroJuego.camera.width/2, nuestroJuego.camera.y + nuestroJuego.camera.height/2, 'ended');
   gameEndSprite.anchor.setTo(0.5,0.5);
   gameEndSprite.scale.setTo(0.7,0.7);
@@ -989,7 +1020,7 @@ if(playerLives === 0){
   pressSprite.scale.setTo(0.5,0.5);
 
   music.destroy();
-  enjuego = false ;
+  enJuego = false ;
   nuestroJuego.paused = true;
 }
 }
