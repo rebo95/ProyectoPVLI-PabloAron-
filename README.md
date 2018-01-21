@@ -1,5 +1,9 @@
 GDIAMETER
+
+
 Mecanismos y jugabilidad:
+
+
 Las mecánicas y mecanismos básicos se mantendrán fieles al original:
 Manejamos una nave que se puede desplazar a lo ancho y alto de la pantalla con las teclas de dirección.
 Con la tecla espacio disparamos.
