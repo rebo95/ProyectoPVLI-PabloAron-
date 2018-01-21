@@ -422,7 +422,7 @@ createPowerUp(integranteP.x, integranteP.y)
 
 //creación de los elementos del HUD
 
-var posBot3 = new pos(this.game.camera.x + this.game.camera.width /2 , 50);
+var posBot3 = new pos(this.game.camera.x + this.game.camera.width /2 , 20);
 boton3 = new HUD(this.game, posBot3, 'blackRectangle', target_vel);
 boton3.anchor.setTo(0.5,0.5);
 boton3.scale.setTo(1.2, 0.3);
@@ -593,7 +593,12 @@ for(var z = 0; z<arrayP.length; z++)
       armor.y = player.y;
     }
 
-    txt.setText("  Score : " + points + "        Lifes : " + playerLives);
+    for(var i = 0; i<enemyArray.length; i++ ){
+      if(enemyArray[i].x<this.game.camera.x)
+      enemyArray[i].kill();
+            }
+
+    txt.setText("  Score : " + points + "        Lifes : "); // + playerLives);
     gameOver();
   },
 
@@ -682,7 +687,7 @@ else {  explosion.play();
     upgradesSprites();
 
     if(target.x >= 400)
-    target.x -= 300;
+    target.x -= 400;
     else target.x = 0;
     var playerPos = new pos(target.x + 50, posYPlayerIni);
     create_player(this.game, playerPos, 'naves', playerVel, playerLives);
