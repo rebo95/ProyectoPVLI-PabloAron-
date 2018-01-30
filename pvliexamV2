@@ -1,0 +1,237 @@
+'use strict';
+
+
+var controlsPlayer1;
+
+var controlsPlayer2;
+
+
+var PlayScene = {
+
+    preload: function () {
+        this.game.load.spritesheet('dude', 'images/dude.png', 32, 48);
+    },
+
+    create: function () {
+
+
+
+        this.game.physics.startSystem(Phaser.Physics.ARCADE);
+
+        this.game.time.desiredFps = 30;
+
+        this.game.physics.arcade.gravity.y = 250;
+
+        this.newplayerLives = 10;
+        this.player3Lives = 5;
+
+        this.controlsPlayer1 = {
+            up : this.game.input.keyboard.addKey(Phaser.Keyboard.W),
+            left : this.game.input.keyboard.addKey(Phaser.Keyboard.A),
+            right : this.game.input.keyboard.addKey(Phaser.Keyboard.D),
+        };
+
+        this.controlsPlayer2 = {
+            up : this.game.input.keyboard.addKey(Phaser.Keyboard.I),
+            left : this.game.input.keyboard.addKey(Phaser.Keyboard.J),
+            right : this.game.input.keyboard.addKey(Phaser.Keyboard.L),
+        };
+
+        this.newplayerPosition = new pos(32, 32);
+        this.newplayer = new Player(this.game, this.newplayerPosition, 'dude', 150, Phaser.Keyboard.D, Phaser.Keyboard.A, Phaser.Keyboard.W, this.newplayerLives,  this.controlsPlayer1 );
+
+        this.player3Position = new pos(this.game.width - 100, 32);
+        this.player3 = new Player(this.game, this.player3Position, 'dude', 150, Phaser.Keyboard.L, Phaser.Keyboard.J, Phaser.Keyboard.I, this.player3Lives, this.controlsPlayer2);
+
+        this.livestxt = this.game.add.text( 0,0, "Vidas Player 1: " + this.newplayerLives +"   Vidas Player 2: " +  this.player3Lives , {font: "20px Italic", fill:"#ffff", align: "center"});
+
+    },
+
+    update: function () {
+        this.game.physics.arcade.collide(this.newplayer, this.player3, bouncing, null, this);
+        this.livestxt.setText("Vidas P1: " + this.newplayer._lives + "   Vidas P2: " +  this.player3._lives);
+    },
+
+};
+
+function bouncing(obj1, obj2){
+    if(obj1.body.touching.left)
+    obj1.OnTheLeft();
+    else if (obj1.body.touching.right)
+    obj1.OnTheRigth();
+
+    obj1.SubLife();
+    obj2.SubLife();
+
+    if(obj2.body.touching.left)
+    obj2.OnTheLeft();
+    else if (obj2.body.touching.right)
+    obj2.OnTheRigth();
+
+}
+
+function pos(x, y)
+{
+  this._x = x;
+  this._y = y;
+}
+
+function Movable(game, position, sprite, velocity)
+{
+  Phaser.Sprite.apply(this, [game, position._x, position._y, sprite]);
+  this._velocity = velocity;
+  // genera las variables que van a contener la informacion del movimiento de mi personaje.
+
+}
+
+Movable.prototype = Object.create(Phaser.Sprite.prototype);
+Movable.prototype.constructor = Movable;
+
+
+function Player(game, position, sprite, velocity, dcha, izda, up, lives, controles)
+{
+  Movable.apply(this, [game, position, sprite, velocity]);
+  
+
+  this._jumpKey = controles.up; 
+  this._leftKeyCode = controles.left;
+  this._rightKeyCode = controles.right;
+
+
+  this._lives = lives;
+
+  game.physics.enable(this, Phaser.Physics.ARCADE);
+  game.world.addChild(this);// si se quiere crear un elemento desde la herencia es necesario añadirlo como hijo al mundoa
+  this.body.bounce.y = 0.2;
+  this.body.collideWorldBounds = true;
+  this.body.setSize(20, 32, 5, 16);
+  this.body.drag.x = 20;
+
+
+  this.facing = 'left';
+  this.jumpTimer = 0;
+  
+  this.animations.add('left', [0, 1, 2, 3], 10, true);
+  this.animations.add('turn', [4], 20, true);
+  this.animations.add('right', [5, 6, 7, 8], 10, true);
+  
+  //this.body.bounce.setTo(1,0);
+
+  this.collisionOnRight = false;
+  this.collisonOnLeft = false;
+
+  this.onair = false;
+  this.kv = 0;
+  this.time = 0;
+}
+
+Player.prototype = Object.create(Movable.prototype);
+Player.prototype.constructor = Player;
+
+Player.prototype.Movement = function(){
+
+    this.body.velocity.x = this.kv;
+
+    if(!this.collisionOnRight && !this.collisonOnLeft)
+            if (this._leftKeyCode.isDown)
+            {
+                this.body.velocity.x = -this._velocity;
+                //this.player.body.x -=150;
+    
+                if (this.facing != 'left')
+                {
+                    this.animations.play('left');
+                    this.facing = 'left';
+                }
+            }
+            else if (this._rightKeyCode.isDown)
+            {
+                this.body.velocity.x = this._velocity;
+    
+                if (this.facing != 'right')
+                {
+                    this.animations.play('right');
+                    this.facing = 'right';
+                }
+            }
+            else
+            {
+                if (this.facing != 'idle')
+                {
+                    this.animations.stop();
+    
+                    if (this.facing == 'left')
+                    {
+                        this.frame = 0;
+                    }
+                    else
+                    {
+                        this.frame = 5;
+                    }
+    
+                    this.facing = 'idle';
+                }
+
+
+            }
+
+    
+            if (this._jumpKey.isDown && this.body.onFloor())
+              {
+                this.body.velocity.y = -250;
+              }
+
+
+            if(this.collisionOnRight){
+
+                //console.log(this.time);
+                this.kv = -200;
+                this.time++;
+                if (this.time>=6){
+                    this.kv = 0;
+                    this.time = 0; 
+                    this.collisionOnRight = false;
+                }
+                 
+            }
+
+            else if(this.collisonOnLeft){
+                console.log(this.time);
+                this.kv = 200;
+                this.time++;
+                if (this.time>=6){
+                    this.kv = 0;
+                    this.time = 0; 
+                    this.collisonOnLeft = false;
+                }
+            }
+
+
+
+
+
+            
+}
+
+
+
+Player.prototype.OnTheRigth = function(){
+    this.collisionOnRight = true;
+}
+Player.prototype.OnTheLeft = function(){
+    this.collisonOnLeft = true;
+}
+Player.prototype.SubLife = function(){
+    this._lives--;
+}
+Player.prototype.update = function(){
+    this.Movement();
+}
+
+
+
+
+
+
+
+module.exports = PlayScene;
