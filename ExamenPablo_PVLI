@@ -1,0 +1,222 @@
+'use strict';
+
+var PlayScene = {
+
+    preload: function () {
+        this.game.load.spritesheet('dude', 'images/dude.png', 32, 48);
+    },
+
+    create: function () {
+
+        this.game.physics.startSystem(Phaser.Physics.ARCADE);
+
+        this.game.time.desiredFps = 30;
+
+        this.game.physics.arcade.gravity.y = 250;
+
+        //Velocidad para ambos player
+        this.playerVel = 150;
+        
+        //Struct para definir los controles del Player1
+        this.controlsPlayer1 = {
+            up : this.game.input.keyboard.addKey(Phaser.Keyboard.W),
+            left : this.game.input.keyboard.addKey(Phaser.Keyboard.A),
+            right : this.game.input.keyboard.addKey(Phaser.Keyboard.D),
+        };
+        
+        this.player1Lives = 10;
+        this.player1Pos = new pos(32, 32);
+        this.player1 = new Player(this.game, this.player1Pos, 'dude', this.playerVel, this.controlsPlayer1, this.player1Lives);
+
+        //Struct para definir los controles del Player2
+        this.controlsPlayer2 = {
+            up : this.game.input.keyboard.addKey(Phaser.Keyboard.I),
+            left : this.game.input.keyboard.addKey(Phaser.Keyboard.J),
+            right : this.game.input.keyboard.addKey(Phaser.Keyboard.L),
+        };
+
+        this.player2Lives = 5;
+        this.player2Pos = new pos(730, 32);
+        this.player2 = new Player(this.game, this.player2Pos, 'dude', this.playerVel, this.controlsPlayer2, this.player2Lives);
+    
+        //Declaramos el style del teexto
+        var style = { font: "32px Arial", fill: "#FFFFFF", align: "center"};
+        
+        //Creamos los dos textos
+        this.textPlayer1 = this.game.add.text(0, 0, "Player 1 lives: " + this.player1Lives, style);
+        this.textPlayer2 = this.game.add.text(550, 0, "Player 2 lives: " + this.player2Lives, style);
+    },
+
+    update: function () 
+    {
+        //Vamos actualizando el texto llamando a la variable lives de los respectivos players
+        this.textPlayer1.setText("Player 1 lives: " + this.player1._lives);
+        this.textPlayer2.setText("Player 2 lives: " + this.player2._lives);
+
+        this.game.physics.arcade.collide(this.player1, this.player2, bounce, null, this);
+    },
+
+};
+
+//Funcion que gestiona el rebote de ambos jugadores
+function bounce(obj1, obj2)
+{
+    if(obj1.body.touching.left)
+        obj1.leftCollision();
+    else if(obj1.body.touching.right)
+        obj1.rightCollision();
+    
+    obj1.subLives();
+    obj2.subLives();
+
+    if(obj2.body.touching.left)
+        obj2.leftCollision();
+    else if(obj2.body.touching.right)
+        obj2.rightCollision();
+}
+
+function pos(x, y)
+{
+    this._x = x;
+    this._y = y;
+}
+
+//Clase Movable, que hereda de Sprite
+function Movable(game, position, sprite, velocity)
+{
+    Phaser.Sprite.apply(this, [game, position._x, position._y, sprite]);
+    this._velocity = velocity;
+}
+
+Movable.prototype = Object.create(Phaser.Sprite.prototype);
+Movable.prototype.constructor = Movable;
+
+//Clase Player, que hereda de Movable
+function Player(game, position, sprite, velocity, controls, lives)
+{
+    Movable.apply(this, [game, position, sprite, velocity]);
+    //Declaramos los atributos de la clase
+    this._jump = controls.up;
+    this._left = controls.left;
+    this._right = controls.right;
+    
+    this._lives = lives;
+
+    this.facing = 'left';
+    this.jumpTimer = 0;
+
+    game.physics.enable(this, Phaser.Physics.ARCADE);
+
+    this.body.bounce.y = 0.2;
+    this.body.collideWorldBounds = true;
+    this.body.setSize(20, 32, 5, 16);
+
+    this.animations.add('left', [0, 1, 2, 3], 10, true);
+    this.animations.add('turn', [4], 20, true);
+    this.animations.add('right', [5, 6, 7, 8], 10, true);
+
+    this._rCollision = false;
+    this._lCollision = false;
+
+    this._bounceVel = 0;
+    this._colTime = 0;
+    game.world.addChild(this);
+}
+
+Player.prototype = Object.create(Movable.prototype);
+Player.prototype.constructor = Player;
+
+//Input del player
+Player.prototype.Movement = function()
+{
+    this.body.velocity.x = this._bounceVel;
+    
+    if(!this._rCollision && !this._lCollision)
+    {
+        if(this._left.isDown)
+        {
+            this.body.velocity.x = -this._velocity;
+            
+            if (this.facing != 'left')
+            {
+                this.animations.play('left');
+                this.facing = 'left';
+            }
+                        
+        }
+        else if(this._right.isDown)
+        {
+            this.body.velocity.x = this._velocity;
+    
+            if (this.facing != 'right')
+            {
+                this.animations.play('right');
+                this.facing = 'right';
+            }
+        }
+        else
+        {
+            if (this.facing != 'idle')
+            {
+                this.animations.stop();
+    
+                if (this.facing == 'left')
+                    this.frame = 0;
+                else
+                    this.frame = 5;
+    
+                this.facing = 'idle';
+            }
+        }
+    
+    }
+    
+    if(this._jump.isDown && this.body.onFloor())
+        this.body.velocity.y = -250;
+
+    //Gestion de los rebotes
+    if(this._rCollision)
+    {
+        this._bounceVel = -200;
+        this._colTime++;
+        if (this._colTime >= 6)
+        {
+            this._bounceVel = 0;
+            this._colTime = 0;
+            this._rCollision = false;
+        }
+    }
+    else if(this._lCollision)
+    {
+        this._bounceVel = 200;
+        this._colTime++;
+        if (this._colTime >= 6)
+        {
+            this._bounceVel = 0;
+            this._colTime = 0;
+            this._lCollision = false;
+        }
+    }
+}
+
+Player.prototype.leftCollision = function()
+{
+    this._lCollision = true;
+}
+
+Player.prototype.rightCollision = function()
+{
+    this._rCollision = true;
+}
+
+Player.prototype.subLives = function()
+{
+    this._lives--;
+}
+
+Player.prototype.update = function()
+{
+    this.Movement();
+}
+
+module.exports = PlayScene;
